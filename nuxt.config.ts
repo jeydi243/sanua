@@ -17,6 +17,15 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+  }, runtimeConfig: {
+    // Private keys are only available on the server
+    apiSecret: '123',
+
+    // Public keys that are exposed to the client
+    public: {
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      SUPABASE_URL: process.env.SUPABASE_URL
+    }
   },
   shadcn: {
     /**
