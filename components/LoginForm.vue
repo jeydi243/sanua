@@ -11,10 +11,16 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-
+const { signIn } = useAuth();
 const props = defineProps<{
   class?: HTMLAttributes['class']
 }>()
+
+async function login(values: any) {
+  const { email, password } = values;
+  await signIn(email, password);
+  console.log(email, password);
+}
 </script>
 
 <template>
@@ -27,24 +33,16 @@ const props = defineProps<{
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form @submit="login">
           <div class="flex flex-col gap-6">
             <div class="grid gap-3">
               <Label for="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
+              <Input id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div class="grid gap-3">
               <div class="flex items-center">
                 <Label for="password">Password</Label>
-                <a
-                  href="#"
-                  class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
+                <a href="#" class="ml-auto inline-block text-sm underline-offset-4 hover:underline">
                   Forgot your password?
                 </a>
               </div>
