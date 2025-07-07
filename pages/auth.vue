@@ -8,49 +8,47 @@
                         <CardDescription>
                             Enter your email below to login to your account
                         </CardDescription>
+                        <Alert variant="destructive">
+                            <AlertCircle class="w-4 h-4" />
+                            <AlertDescription v-if="login_result">
+                                {{ login_result }}
+                            </AlertDescription>
+                        </Alert>
                     </CardHeader>
                     <CardContent>
-                        <form @submit="login">
+                        <form @submit="onSubmit">
                             <div class="flex flex-col gap-6">
-                                <div class="grid gap-3">
-                                    <Label for="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="m@example.com" required />
-                                </div>
-                                <div class="grid gap-3">
-                                    <div class="flex items-center">
-                                        <Label for="password">Password</Label>
-                                        <a href="#"
-                                            class="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-                                            Forgot your password?
-                                        </a>
-                                    </div>
-                                    <Input id="password" type="password" required />
-                                </div>
                                 <FormField v-slot="{ componentField }" name="username">
                                     <FormItem>
-                                        <FormLabel>Username</FormLabel>
+                                        <FormLabel>Utilisateur</FormLabel>
                                         <FormControl>
                                             <Input type="text" placeholder="shadcn" v-bind="componentField" />
                                         </FormControl>
-                                        <FormDescription>
-                                            This is your public display name.
-                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                </FormField>
+                                <FormField v-slot="{ componentField }" name="password">
+                                    <FormItem>
+                                        <FormLabel>Mot de passe</FormLabel>
+                                        <FormControl>
+                                            <Input type="text" placeholder="shadcn" v-bind="componentField" />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 </FormField>
                                 <div class="flex flex-col gap-3">
                                     <Button type="submit" class="w-full">
-                                        Login
+                                        Connexion
                                     </Button>
                                     <Button variant="outline" class="w-full">
-                                        Login with Google
+                                        Connexion avec Google
                                     </Button>
                                 </div>
                             </div>
                             <div class="mt-4 text-center text-sm">
-                                Don't have an account?
+                                Pas de compte ?
                                 <a href="#" class="underline underline-offset-4">
-                                    Sign up
+                                    S'enregistrer
                                 </a>
                             </div>
                         </form>
@@ -81,6 +79,8 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form'
+import { AlertCircle } from 'lucide-vue-next'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useForm } from 'vee-validate'
@@ -89,6 +89,8 @@ import * as z from 'zod'
 
 
 const { signIn } = useAuth();
+let login_result = ref(null);
+
 const props = defineProps<{
     class?: HTMLAttributes['class']
 }>()
@@ -99,14 +101,24 @@ async function login(values: any) {
 }
 const formSchema = toTypedSchema(z.object({
     username: z.string().min(2).max(50),
+    password: z.string().min(2).max(50),
 }))
 
 const form = useForm({
     validationSchema: formSchema,
 })
 
-const onSubmit = form.handleSubmit((values) => {
+const onSubmit = form.handleSubmit(async (values) => {
+    const { error, user } = await signIn(values.username, values.password);
     console.log('Form submitted!', values)
+    if (error) {
+        console.error('Erreur de connexion:', error.message);
+        login_result.value = error.message;
+        console.log(login_result);
+    }
+    if (user) {
+        console.log('Connexion réussie:', user);
+    }
 })
 definePageMeta({
     layout: 'auth',

@@ -5,9 +5,9 @@ export const useAuth = () => {
         const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
             console.error('Erreur de connexion:', error.message);
-            return null;
+            return { error };
         }
-        return user;
+        return { user };
     };
 
     const signOut = async () => {
