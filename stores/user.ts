@@ -88,5 +88,18 @@ export const useUserStore = defineStore('user', {
                 this.loading = false;
             }
         },
+        setupAuthListener() {
+            const supabase = useSupabase();
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN') {
+                    console.log('Utilisateur connecté:', session?.user);
+                    this.user = session?.user || null;
+                } else if (event === 'SIGNED_OUT') {
+                    console.log('Utilisateur déconnecté.');
+                    this.user = null;
+                }
+                // Vous pouvez gérer d'autres événements comme 'INITIAL_SESSION', 'TOKEN_REFRESHED'
+            });
+        }
     },
 });

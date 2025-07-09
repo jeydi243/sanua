@@ -11,5 +11,6 @@
 <script>
 definePageMeta({
   middleware: ['auth'], // Applique le middleware 'auth' à cette page
-  requiresAuth: true // Une méta-propriété personnalisée pour indiquer que la page nécessite une authentification
+  requiresAuth: true,
+  title: 'Dashboard - Sanua'
 });</script>

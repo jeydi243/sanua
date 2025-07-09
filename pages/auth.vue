@@ -118,6 +118,7 @@ const onSubmit = form.handleSubmit(async (values) => {
     }
     if (user) {
         console.log('Connexion réussie:', user);
+        navigateTo('/');
     }
 })
 definePageMeta({

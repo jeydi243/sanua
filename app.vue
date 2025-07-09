@@ -5,8 +5,14 @@
   </NuxtLayout>
 </template>
 <script setup lang="ts">
-import { createClient } from '@supabase/supabase-js'
-const config = useRuntimeConfig()
-const supabase = createClient(config.public.SUPABASE_URL, config.public.SUPABASE_ANON_KEY)
 
+const userStore = useUserStore();
+
+onMounted(() => {
+  // Initialise l'utilisateur et configure l'écouteur d'authentification au démarrage de l'application.
+  // Cela garantit que le store est à jour avec la session actuelle
+  // et qu'il réagit aux changements d'état d'authentification.
+  userStore.fetchUser();
+  userStore.setupAuthListener();
+});
 </script>
