@@ -38,6 +38,7 @@
                                 </FormField>
                                 <div class="flex flex-col gap-3">
                                     <Button type="submit" class="w-full">
+                                        <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="isLoading" />
                                         Connexion
                                     </Button>
                                     <Button variant="outline" class="w-full">
@@ -103,20 +104,23 @@ const formSchema = toTypedSchema(z.object({
     username: z.string().min(2).max(50),
     password: z.string().min(2).max(50),
 }))
-
+var isLoading = ref(false)
 const form = useForm({
     validationSchema: formSchema,
 })
 
 const onSubmit = form.handleSubmit(async (values) => {
+    isLoading.value = true
     const { error, user } = await signIn(values.username, values.password);
     console.log('Form submitted!', values)
     if (error) {
+        isLoading.value = false
         console.error('Erreur de connexion:', error.message);
         login_result.value = error.message;
         console.log(login_result);
     }
     if (user) {
+        isLoading.value = false
         console.log('Connexion réussie:', user);
         navigateTo('/');
     }
