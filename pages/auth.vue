@@ -8,9 +8,9 @@
                         <CardDescription>
                             Enter your email below to login to your account
                         </CardDescription>
-                        <Alert variant="destructive">
+                        <Alert variant="destructive" class="border border-red-500" v-if="login_result">
                             <AlertCircle class="w-4 h-4" />
-                            <AlertDescription v-if="login_result">
+                            <AlertDescription>
                                 {{ login_result }}
                             </AlertDescription>
                         </Alert>
@@ -38,7 +38,8 @@
                                 </FormField>
                                 <div class="flex flex-col gap-3">
                                     <Button type="submit" class="w-full">
-                                        <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="isLoading" />
+                                        <Icon name="line-md:loading-twotone-loop" style="color: white"
+                                            v-if="isLoading" />
                                         Connexion
                                     </Button>
                                     <Button variant="outline" class="w-full">
@@ -127,6 +128,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 })
 definePageMeta({
     layout: 'auth',
+    title: 'Auth'
 })
 </script>
 

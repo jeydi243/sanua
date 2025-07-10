@@ -8,9 +8,12 @@
     <div class="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
   </div>
 </template>
-<script>
+
+<script setup lang="ts">
 definePageMeta({
   middleware: ['auth'], // Applique le middleware 'auth' à cette page
   requiresAuth: true,
   title: 'Dashboard - Sanua'
-});</script>
+})
+
+</script>
