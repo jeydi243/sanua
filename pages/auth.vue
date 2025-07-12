@@ -91,7 +91,12 @@ import * as z from 'zod'
 
 
 useHead({ title: 'Authentification - Sanua' })
-
+definePageMeta({
+    layout: 'auth',
+    middleware: 'auth',
+    title: 'Auth',
+    name: 'auth'
+})
 
 const { signIn } = useUserStore();
 let login_result = ref(null);
@@ -129,10 +134,7 @@ const onSubmit = form.handleSubmit(async (values) => {
         navigateTo('/');
     }
 })
-definePageMeta({
-    layout: 'auth',
-    title: 'Auth'
-})
+
 </script>
 
 <style scoped></style>

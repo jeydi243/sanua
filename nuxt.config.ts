@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     'shadcn-nuxt',
     '@pinia/nuxt',
     '@nuxtjs/supabase',
+    'motion-v/nuxt'
   ],
   css: ['~/assets/css/tailwind.css'],
   vite: {
@@ -25,7 +26,7 @@ export default defineNuxtConfig({
   supabase: {
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_ANON_KEY,
-    redirect: true, // Gère les redirections post-connexion/déconnexion
+    redirect: false, // Gère les redirections post-connexion/déconnexion
     redirectOptions: {
       login: '/auth',
       callback: '/confirm'
