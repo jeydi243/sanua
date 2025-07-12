@@ -29,7 +29,7 @@ import {
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
-
+const user = useSupabaseUser();
 const data = {
   user: {
     name: 'shadcn',
@@ -139,19 +139,19 @@ const data = {
       items: [
         {
           title: 'General',
-          url: '#',
+          url: '/parametres',
         },
         {
-          title: 'Team',
-          url: '#',
+          title: 'Utilisateurs',
+          url: '/parametres/utilisateurs',
         },
         {
-          title: 'Billing',
-          url: '#',
+          title: 'Lookups',
+          url: '/parametres/lookups',
         },
         {
-          title: 'Limits',
-          url: '#',
+          title: 'Organisations',
+          url: '/parametres/organisations',
         },
       ],
     },
@@ -166,10 +166,10 @@ const data = {
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />
-      <NavProjects :projects="data.projects" />
+      <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser :user="user" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>
