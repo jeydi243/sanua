@@ -52,6 +52,7 @@ export const useUserStore = defineStore('user', {
         },
 
         async signOut() {
+            const supabase = useSupabaseClient();
             const { error } = await supabase.auth.signOut();
             if (error) {
                 console.error('Erreur de déconnexion:', error.message);
