@@ -22,7 +22,7 @@ export default defineNuxtPlugin(nuxtApp => {
     // Fournissez l'instance Supabase à l'application Nuxt.
     // Elle sera accessible via `useNuxtApp().$supabase`
     // ou via un composable personnalisé que nous allons créer.
-    nuxtApp.provide('supabase', supabase);
+    nuxtApp.provide('supabase2', supabase);
 
     // Optionnel: Vous pouvez également rendre l'instance disponible directement
     // pour une utilisation plus simple dans les composables/pages avec un composable.

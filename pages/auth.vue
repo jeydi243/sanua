@@ -90,7 +90,10 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
 
-const { signIn } = useAuth();
+useHead({ title: 'Authentification - Sanua' })
+
+
+const { signIn } = useUserStore();
 let login_result = ref(null);
 
 const props = defineProps<{

@@ -11,9 +11,10 @@
 
 <script setup lang="ts">
 definePageMeta({
-  middleware: ['auth'], // Applique le middleware 'auth' à cette page
+  // middleware: ['auth'], // Applique le middleware 'auth' à cette page
   requiresAuth: true,
-  title: 'Dashboard - Sanua'
 })
+
+useHead({ title: 'Dashboard - Sanua' })
 
 </script>

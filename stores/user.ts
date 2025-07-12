@@ -1,5 +1,5 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { defineStore } from 'pinia'
-
 interface UserState {
     user: any | null; // Remplacez 'any' par le type d'utilisateur Supabase si vous l'avez défini
     loading: boolean;
@@ -10,7 +10,7 @@ export const useUserStore = defineStore('user', {
     state: (): UserState => ({
         user: null,
         loading: false,
-        error: null,
+        error: null
     }),
     actions: {
         /**
@@ -41,55 +41,30 @@ export const useUserStore = defineStore('user', {
             }
         },
 
-        /**
-         * Gère la connexion de l'utilisateur.
-         */
         async signIn(email: string, password: string) {
-            this.loading = true;
-            this.error = null;
-            try {
-                const supabase = useSupabase();
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-                if (error) {
-                    throw error;
-                }
-
-                this.user = data.user;
-                return data.user;
-            } catch (err: any) {
-                this.error = err.message || 'Erreur de connexion.';
-                this.user = null;
-                throw err; // Propage l'erreur pour une gestion côté composant
-            } finally {
-                this.loading = false;
+            const supabase = useSupabaseClient();
+            const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                console.error('Erreur de connexion:', error.message);
+                return { error };
             }
+            return { user };
         },
 
-        /**
-         * Gère la déconnexion de l'utilisateur.
-         */
         async signOut() {
-            this.loading = true;
-            this.error = null;
-            try {
-                const supabase = useSupabase();
-                const { error } = await supabase.auth.signOut();
-
-                if (error) {
-                    throw error;
-                }
-
-                this.user = null;
-            } catch (err: any) {
-                this.error = err.message || 'Erreur de déconnexion.';
-                throw err;
-            } finally {
-                this.loading = false;
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Erreur de déconnexion:', error.message);
             }
         },
+
+        async getUser() {
+            const { data: { user } } = await this.supabase.auth.getUser();
+            return user;
+        },
+
         setupAuthListener() {
-            const supabase = useSupabase();
+            const supabase = useSupabaseClient();
             supabase.auth.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_IN') {
                     console.log('Utilisateur connecté:', session?.user);

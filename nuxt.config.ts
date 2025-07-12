@@ -4,21 +4,34 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-
+  app: {
+    layoutTransition: { name: 'fadeIn' }
+  },
   modules: [
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     'shadcn-nuxt',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@nuxtjs/supabase',
   ],
   css: ['~/assets/css/tailwind.css'],
   vite: {
     plugins: [
       tailwindcss(),
     ],
-  }, runtimeConfig: {
+  },
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_ANON_KEY,
+    redirect: true, // Gère les redirections post-connexion/déconnexion
+    redirectOptions: {
+      login: '/auth',
+      callback: '/confirm'
+    }
+  },
+  runtimeConfig: {
     // Private keys are only available on the server
     apiSecret: '123',
 
@@ -52,7 +65,7 @@ export default defineNuxtConfig({
       scan: true,
 
       // include all custom collections in the client bundle
-      includeCustomCollections: true, 
+      includeCustomCollections: true,
 
       // guard for uncompressed bundle size, will fail the build if exceeds
       sizeLimitKb: 256,

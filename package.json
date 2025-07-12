@@ -14,6 +14,7 @@
     "@nuxt/fonts": "0.11.4",
     "@nuxt/icon": "1.15.0",
     "@nuxt/image": "1.10.0",
+    "@nuxtjs/supabase": "1.5.3",
     "@pinia/nuxt": "0.11.1",
     "@supabase/supabase-js": "^2.50.3",
     "@tailwindcss/vite": "^4.1.11",

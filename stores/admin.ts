@@ -40,7 +40,7 @@ export const useAdminStore = defineStore('admin', {
         // Get error message
         getError: (state) => state.error
     },
-
+ 
     actions: {
         // Fonction pour récupérer un utilisateur par ID (déjà présente)
         async fetchUserById(userId: string) {
