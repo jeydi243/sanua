@@ -30,6 +30,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
 const user = useSupabaseUser();
+const userTo = { ...user, src: 'https://www.linkedin.com' }
 const data = {
   user: {
     name: 'shadcn',
@@ -169,7 +170,7 @@ const data = {
       <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="user" />
+      <NavUser :user="data.user" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MailOpen, PlusIcon } from 'lucide-vue-next'
 import type {
     ColumnDef,
     ColumnFiltersState,
@@ -175,7 +176,7 @@ function randomize() {
 </script>
 
 <template>
-    <div class="w-full">
+    <div class="w-full ">
         <div class="flex gap-2 items-center py-4">
             <Input class="max-w-52" placeholder="Filter emails..."
                 :model-value="table.getColumn('email')?.getFilterValue() as string"
@@ -200,6 +201,10 @@ function randomize() {
                     </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+            <Button>
+                <PlusIcon class="w-4 h-4 mr-2" />
+                Créer un utilisateur
+            </Button>
         </div>
         <div class="rounded-md border">
             <Table>
