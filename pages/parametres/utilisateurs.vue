@@ -37,6 +37,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import DropdownAction from '@/components/users/dropdownAction.vue'
+import type { User } from '@supabase/supabase-js'
 
 export interface Payment {
     id: string
@@ -77,6 +78,34 @@ const data = shallowRef<Payment[]>([
         email: 'carmella@hotmail.com',
     },
 ])
+onMounted(async () => {
+    await fetchUsers()
+})
+
+const users = shallowRef<User[]>([])
+const loading = ref(false)
+const errorMessage = ref('')
+
+const fetchUsers = async () => {
+    loading.value = true;
+    errorMessage.value = '';
+    try {
+        // Vous pouvez passer des paramètres de pagination ici, ex: ?page=2&perPage=50
+        const response = await fetch('/api/admin/users/lists');
+        const result = await response.json();
+        if (!response.ok) {
+            errorMessage.value = result.message || 'An unknown error occurred.';
+            users.value = [];
+        } else {
+            users.value = result.users;
+        }
+    } catch (error: any) {
+        errorMessage.value = `Error fetching users list: ${error.message}`;
+    } finally {
+        loading.value = false;
+        // console.log("pffffff ....");
+    }
+};
 
 const columns: ColumnDef<Payment>[] = [
     {
@@ -110,27 +139,30 @@ const columns: ColumnDef<Payment>[] = [
         cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
     },
     {
-        accessorKey: 'amount',
-        header: () => h('div', { class: 'text-right' }, 'Amount'),
+        accessorKey: 'role',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Rôle', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('role')),
+    },
+    {
+        accessorKey: 'deleted_at',
+        header: () => h('div', { class: 'text-right' }, 'Deleted at'),
         cell: ({ row }) => {
-            const amount = Number.parseFloat(row.getValue('amount'))
-
-            // Format the amount as a dollar amount
-            const formatted = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }).format(amount)
-
-            return h('div', { class: 'text-right font-medium' }, formatted)
+            return h('div', { class: 'text-right font-medium' }, row.getValue('deleted_at'))
         },
     },
     {
         id: 'actions',
         enableHiding: false,
+        header: () => h('div', { class: 'text-center' }, 'Actions'),
         cell: ({ row }) => {
             const payment = row.original
 
-            return h('div', { class: 'relative' }, h(DropdownAction, {
+            return h('div', { class: 'relative text-center' }, h(DropdownAction, {
                 payment,
                 onExpand: row.toggleExpanded,
             }))
@@ -145,7 +177,7 @@ const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
 
 const table = useVueTable({
-    data,
+    data: users,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

@@ -73,6 +73,8 @@ export const useUserStore = defineStore('user', {
                 } else if (event === 'SIGNED_OUT') {
                     console.log('Utilisateur déconnecté.');
                     this.user = null;
+                    const router = useRouter();
+                    router.push('/auth');
                 }
                 // Vous pouvez gérer d'autres événements comme 'INITIAL_SESSION', 'TOKEN_REFRESHED'
             });
