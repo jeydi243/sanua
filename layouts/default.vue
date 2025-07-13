@@ -24,7 +24,7 @@
                     </div>
                 </header>
 
-                <div>
+                <div class="p-6">
                     <slot />
                 </div>
             </SidebarInset>
