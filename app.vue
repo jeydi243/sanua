@@ -2,12 +2,14 @@
   <NuxtLayout>
     <NuxtRouteAnnouncer />
     <!-- <Transition name="fadeIn" mode="out-in"> -->
-      <NuxtPage :page-key="route => route.fullPath" />
+    <NuxtPage :page-key="route => route.fullPath" />
+    <Toaster />
     <!-- </Transition> -->
   </NuxtLayout>
 </template>
 <script setup lang="ts">
-
+import { Toaster } from '@/components/ui/sonner'
+import 'vue-sonner/style.css'
 const { fetchUser, setupAuthListener } = useUserStore();
 
 onMounted(() => {

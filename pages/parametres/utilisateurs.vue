@@ -1,17 +1,21 @@
 <template>
     <div class="w-full ">
+        <!-- <div class="w-[500px] h-svh">
+            <Bar :data="dataChart" :options="optionChart" />
+        </div> -->
         <div class="flex gap-2 items-center py-4">
-            <Input class="max-w-52" placeholder="Filter emails..."
+            <Input class="max-w-52" placeholder="Rechercher"
                 :model-value="table.getColumn('email')?.getFilterValue() as string"
                 @update:model-value=" table.getColumn('email')?.setFilterValue($event)" />
-            <Button @click="randomize">
+            <!-- <Button @click="randomize">
                 Randomize
-            </Button>
+            </Button> -->
             <Button @click="refresh">
                 <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="pending" />
-                Actualiser
+                <Icon name="cuida:loading-right-outline" style="color: white" v-if="!pending" />
+                <!-- Actualiser -->
             </Button>
-            
+
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline" class="ml-auto">
@@ -107,8 +111,26 @@ import {
     getSortedRowModel,
     useVueTable,
 } from '@tanstack/vue-table'
-import { ArrowUpDown, ChevronDown, RefreshCwIcon } from 'lucide-vue-next'
+import { ArrowUpDown, ChevronDown } from 'lucide-vue-next'
+import {
+    Chart as ChartJS,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    CategoryScale,
+    LinearScale
+} from 'chart.js'
+import { Bar } from 'vue-chartjs'
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+const dataChart = {
+    labels: ['January', 'February', 'March'],
+    datasets: [{ data: [40, 20, 12] }]
+}
+const optionChart = {
+    responsive: true
+}
 // import { valueUpdater } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -149,7 +171,7 @@ const { data: users, status, error, refresh, pending } = await useAsyncData<resp
     () => $fetch('/api/admin/users/lists'),
     { transform: (data) => data.users }
 )
-console.log("Users ", users.value, "status is ", status.value, ", error is ", error.value);
+// console.log("Users ", users.value, "status is ", status.value, ", error is ", error.value);
 
 const data = shallowRef<Payment[]>([
     {
