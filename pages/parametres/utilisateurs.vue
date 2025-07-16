@@ -11,6 +11,7 @@
                 <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="pending" />
                 Actualiser
             </Button>
+            
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline" class="ml-auto">
@@ -28,11 +29,12 @@
                     </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <Button>
+            <CreateUserForm />
+            <!-- <Button>
 
                 <PlusIcon class="w-4 h-4 mr-2" />
                 Créer un utilisateur
-            </Button>
+            </Button> -->
         </div>
         <div class="rounded-md border">
             <Table>
@@ -127,6 +129,7 @@ import {
 } from '@/components/ui/table'
 import DropdownAction from '@/components/users/dropdownAction.vue'
 import type { User } from '@supabase/supabase-js'
+import CreateUserForm from '~/components/users/createUserForm.vue'
 
 export interface Payment {
     id: string
@@ -146,7 +149,7 @@ const { data: users, status, error, refresh, pending } = await useAsyncData<resp
     () => $fetch('/api/admin/users/lists'),
     { transform: (data) => data.users }
 )
-console.log("status is ", status.value, ", error is ", error.value);
+console.log("Users ", users.value, "status is ", status.value, ", error is ", error.value);
 
 const data = shallowRef<Payment[]>([
     {
