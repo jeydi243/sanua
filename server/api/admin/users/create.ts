@@ -23,12 +23,17 @@ export default defineEventHandler(async (event) => {
         return error;
     }
 
+    if (!body.user_type) {
+        const error = new H3Error("Vous devez definir le type d''utilisateur. (Public ou Interne)");
+        error.statusCode = 400;
+        return error;
+    }
+
     try {
         const supabaseAdmin = getSupabaseAdminClient();
         const { data, error } = await supabaseAdmin.auth.admin.createUser({
             email: body.email,
             password: body.password,
-            phone: body.phone,
             email_confirm: body.email_confirm,
             user_metadata: body.user_metadata
         });

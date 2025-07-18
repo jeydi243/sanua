@@ -10,9 +10,9 @@
             <!-- <Button @click="randomize">
                 Randomize
             </Button> -->
-            <Button @click="refresh">
-                <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="pending" />
-                <Icon name="cuida:loading-right-outline" style="color: white" v-if="!pending" />
+            <Button @click="fetchUsers">
+                <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="userIsFetching" />
+                <Icon name="cuida:loading-right-outline" style="color: white" v-if="!userIsFetching" />
                 <!-- Actualiser -->
             </Button>
 
@@ -90,11 +90,13 @@
                 </Button>
             </div>
         </div>
+
+        <Toaster class="pointer-events-auto" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { MailOpen, PlusIcon } from 'lucide-vue-next'
+import { Toaster } from '@/components/ui/sonner'
 import type {
     ColumnDef,
     ColumnFiltersState,
@@ -112,6 +114,7 @@ import {
     useVueTable,
 } from '@tanstack/vue-table'
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 import {
     Chart as ChartJS,
     Title,
@@ -122,7 +125,11 @@ import {
     LinearScale
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
-
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const dataChart = {
     labels: ['January', 'February', 'March'],
@@ -131,6 +138,8 @@ const dataChart = {
 const optionChart = {
     responsive: true
 }
+const supabase = useSupabaseClient()
+const users = ref([])
 // import { valueUpdater } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -166,70 +175,51 @@ export interface responseUsers {
     perPage: number;
     totalPages: number;
 }
-const { data: users, status, error, refresh, pending } = await useAsyncData<responseUsers>(
-    'utilisateurs',
-    () => $fetch('/api/admin/users/lists'),
-    { transform: (data) => data.users }
-)
+// const { data: users, status, error, refresh, pending } = await useAsyncData<responseUsers>(
+//     'utilisateurs',
+//     () => $fetch('/api/admin/users/lists'),
+//     { transform: (data) => data.users }
+// )
 // console.log("Users ", users.value, "status is ", status.value, ", error is ", error.value);
 
-const data = shallowRef<Payment[]>([
-    {
-        id: 'm5gr84i9',
-        amount: 316,
-        status: 'success',
-        email: 'ken99@yahoo.com',
-    },
-    {
-        id: '3u1reuv4',
-        amount: 242,
-        status: 'success',
-        email: 'Abe45@gmail.com',
-    },
-    {
-        id: 'derv1ws0',
-        amount: 837,
-        status: 'processing',
-        email: 'Monserrat44@gmail.com',
-    },
-    {
-        id: '5kma53ae',
-        amount: 874,
-        status: 'success',
-        email: 'Silas22@gmail.com',
-    },
-    {
-        id: 'bhqecj4p',
-        amount: 721,
-        status: 'failed',
-        email: 'carmella@hotmail.com',
-    },
-])
+
 onMounted(async () => {
     await fetchUsers()
 })
 
 // const users = shallowRef<User[]>([])
-const loading = ref(false)
+const userIsFetching = ref(false)
 const errorMessage = ref('')
 
 const fetchUsers = async () => {
-    loading.value = true;
+    userIsFetching.value = true;
     errorMessage.value = '';
+    console.log('This is called with ');
+    toast('Event has been created', {
+        description: 'Sunday, December 03, 2023 at 9:00 AM',
+        action: {
+            label: '<strong>Undo</strong>',
+            onClick: () => console.log('Undo'),
+        },
+    });
     try {
         // Vous pouvez passer des paramètres de pagination ici, ex: ?page=2&perPage=50
-        const response = await fetch('/api/admin/users/lists');
-        const result = await response.json();
-        if (!response.ok) {
-            errorMessage.value = result.message || 'An unknown error occurred.';
+
+        let { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('*')
+        console.log(profiles, error);
+
+        if (!profiles) {
+            errorMessage.value = error;
             users.value = [];
         } else {
-            users.value = result.users;
+            users.value = profiles;
         }
     } catch (error: any) {
         errorMessage.value = `Error fetching users list: ${error.message}`;
     } finally {
-        loading.value = false;
+        userIsFetching.value = false;
         // console.log("pffffff ....");
     }
 };
@@ -251,9 +241,23 @@ const columns: ColumnDef<Payment>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: 'status',
-        header: 'Status',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+        accessorKey: 'avatar_url',
+        header: 'Image',
+        cell: ({ row }) => h(
+            Avatar,
+            { class: 'h-8 w-8 rounded-lg' },
+            {
+                default: () => [
+                    h(AvatarImage, { src: row.getValue('avatar_url'), alt: row.getValue('username') }),
+                    h(AvatarFallback, { class: 'rounded-lg' }, 'CN')
+                ]
+            }
+        ),
+    },
+    {
+        accessorKey: 'Username',
+        header: 'Username',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('username')),
     },
     {
         accessorKey: 'email',
@@ -266,6 +270,16 @@ const columns: ColumnDef<Payment>[] = [
         cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
     },
     {
+        accessorKey: 'full_name',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Nom', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('full_name')),
+    },
+    {
         accessorKey: 'role',
         header: ({ column }) => {
             return h(Button, {
@@ -276,10 +290,10 @@ const columns: ColumnDef<Payment>[] = [
         cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('role')),
     },
     {
-        accessorKey: 'deleted_at',
-        header: () => h('div', { class: 'text-right' }, 'Deleted at'),
+        accessorKey: 'user_type',
+        header: () => h('div', { class: 'text-right' }, 'Type'),
         cell: ({ row }) => {
-            return h('div', { class: 'text-right font-medium' }, row.getValue('deleted_at'))
+            return h('div', { class: 'text-right font-medium' }, row.getValue('user_type'))
         },
     },
     {

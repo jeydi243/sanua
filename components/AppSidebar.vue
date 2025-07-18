@@ -35,7 +35,7 @@ const data = {
   user: {
     name: 'shadcn',
     email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
+    avatar: 'http://localhost:3000/avatars/shadcn.jpg',
   },
   teams: [
     {
@@ -134,7 +134,7 @@ const data = {
       ],
     },
     {
-      title: 'Settings',
+      title: 'Parametres',
       url: '#',
       icon: Settings2,
       items: [
@@ -145,6 +145,10 @@ const data = {
         {
           title: 'Utilisateurs',
           url: '/parametres/utilisateurs',
+        },
+        {
+          title: 'Roles',
+          url: '/parametres/roles',
         },
         {
           title: 'Lookups',

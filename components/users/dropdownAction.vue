@@ -18,18 +18,16 @@ function copy(id: string) {
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
             <Button variant="ghost" class="w-8 h-8 p-0">
-                <span class="sr-only">Open menu</span>
+                <span class="sr-only">Ouvrir menu</span>
                 <MoreHorizontal class="w-4 h-4" />
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem @click="copy(payment.id)">
-                Copy payment ID
+                Copier User ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Voir les affectations</DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>
