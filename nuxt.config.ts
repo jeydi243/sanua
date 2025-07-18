@@ -17,6 +17,13 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     'motion-v/nuxt'
   ],
+  fonts: {
+    families: [
+      { name: 'Montserrat', provider: 'google' },
+      { name: 'Roboto', provider: 'google' },
+      { name: 'Open Sans', provider: 'google' },
+    ]
+  },
   css: ['~/assets/css/tailwind.css'],
   vite: {
     plugins: [
