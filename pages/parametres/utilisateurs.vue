@@ -194,7 +194,6 @@ const errorMessage = ref('')
 const fetchUsers = async () => {
     userIsFetching.value = true;
     errorMessage.value = '';
-    console.log('This is called with ');
     toast('Event has been created', {
         description: 'Sunday, December 03, 2023 at 9:00 AM',
         action: {

@@ -10,15 +10,17 @@
                         <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem class="hidden md:block">
-                                    <BreadcrumbLink href="#">
-                                        Building Your Application
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator class="hidden md:block" />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                                </BreadcrumbItem>
+                                <template v-for="(crumb, index) in crumbs" :key="crumb.to">
+                                    <BreadcrumbItem :class="{ 'hidden md:block': index < crumbs.length - 1 }">
+                                        <BreadcrumbLink v-if="index < crumbs.length - 1" :href="crumb.to">
+                                            {{ crumb.label }}
+                                        </BreadcrumbLink>
+                                        <BreadcrumbPage v-else>
+                                            {{ crumb.label }}
+                                        </BreadcrumbPage>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator v-if="index < crumbs.length - 1" class="hidden md:block" />
+                                </template>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
@@ -52,6 +54,26 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from '@/components/ui/sidebar'
+const route = useRoute()
+
+const crumbs = computed(() => {
+    const path = route.path
+    const pathSegments = path.split('/').filter(Boolean)
+
+    const breadcrumbs = pathSegments.map((segment, index) => {
+        const to = `/${pathSegments.slice(0, index + 1).join('/')}`
+        const label = (segment.charAt(0).toUpperCase() + segment.slice(1)).replace(/-/g, ' ')
+        return { label, to }
+    })
+
+    const homeCrumb = { label: 'Accueil', to: '/' }
+
+    if (path === '/') {
+        return [homeCrumb]
+    }
+
+    return [homeCrumb, ...breadcrumbs]
+})
 </script>
 
 <style scoped></style>
