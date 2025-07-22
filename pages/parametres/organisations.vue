@@ -1,17 +1,17 @@
 <template>
     <div class="w-full ">
-        <h1 class="font-bold text-5xl mb-4">Roles</h1>
-        <span class="text-md">List de touts les roles dans l'application </span>
+        <h1 class="font-bold text-5xl mb-4">Organisations</h1>
+        <span class="text-md">List de toutes les organisations dans l'application </span>
         <div class="flex gap-2 items-center py-4">
             <Input class="max-w-52" placeholder="Rechercher"
-                :model-value="table.getColumn('code')?.getFilterValue() as string"
-                @update:model-value=" table.getColumn('code')?.setFilterValue($event)" />
+                :model-value="table.getColumn('email')?.getFilterValue() as string"
+                @update:model-value=" table.getColumn('email')?.setFilterValue($event)" />
             <!-- <Button @click="randomize">
                 Randomize
             </Button> -->
-            <Button @click="fetchRoles">
-                <Icon v-if="roleIsFetching" name="line-md:loading-twotone-loop" style="color: white" />
-                <Icon v-if="!roleIsFetching" name="cuida:loading-right-outline" style="color: white" />
+            <Button @click="fetchOrganisations">
+                <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="userIsFetching" />
+                <Icon name="cuida:loading-right-outline" style="color: white" v-if="!userIsFetching" />
                 <!-- Actualiser -->
             </Button>
 
@@ -33,7 +33,12 @@
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <CreateRoleForm />
+            <CreateOrgForm />
+            <!-- <Button>
+
+                <PlusIcon class="w-4 h-4 mr-2" />
+                Créer un organisation
+            </Button> -->
         </div>
         <div class="rounded-md border">
             <Table>
@@ -78,10 +83,10 @@
             <div class="space-x-2">
                 <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()"
                     @click="table.previousPage()">
-                    Precedent
+                    Previous
                 </Button>
                 <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
-                    Suivant
+                    Next
                 </Button>
             </div>
         </div>
@@ -92,6 +97,7 @@
 
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner'
+import CreateOrgForm from '@/components/organisations/createOrgForm.vue'
 import type {
     ColumnDef,
     ColumnFiltersState,
@@ -108,9 +114,14 @@ import {
     getSortedRowModel,
     useVueTable,
 } from '@tanstack/vue-table'
-import { ChevronDown } from 'lucide-vue-next'
+import { ArrowUpDown, ChevronDown } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar'
 
 const supabase = useSupabaseClient()
 
@@ -131,59 +142,67 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import CreateRoleForm from '~/components/roles/createRoleForm.vue'
-import DropdownActionRole from '~/components/roles/dropdownActionRole.vue'
+import DropdownAction from '@/components/users/dropdownAction.vue'
+import type { User } from '@supabase/supabase-js'
+import CreateUserForm from '~/components/users/createUserForm.vue'
 
-export interface Role {
+export interface Payment {
     id: string
-    code: number
-    name: string
-    description: string
+    amount: number
+    status: 'pending' | 'processing' | 'success' | 'failed'
+    email: string
+}
+export interface responseUsers {
+    users: User[];
+    total: number;
+    page: number;
+    perPage: number;
+    totalPages: number;
 }
 
+
 onMounted(async () => {
-    await fetchRoles()
+    await fetchOrganisations()
 })
 
-// const users = shallowRef<User[]>([])
-const roleIsFetching = ref(false)
+const organisations = shallowRef<[]>([])
+const orgsIsFetching = ref(false)
 const errorMessage = ref('')
-const roles = ref([])
 
-const fetchRoles = async () => {
-    roleIsFetching.value = true;
+const fetchOrganisations = async () => {
+    orgsIsFetching.value = true;
     errorMessage.value = '';
 
-    toast('Role has been created', {
-        description: 'Sunday, December 03, 2023 at 9:00 AM',
-        action: {
-            label: 'Rafraichir',
-            onClick: () => console.log('Rafraichir roles'),
-        },
-    });
     try {
         // Vous pouvez passer des paramètres de pagination ici, ex: ?page=2&perPage=50
 
-        const { data: _roles, error } = await supabase
-            .from('roles')
+        let { data: _organisations, error } = await supabase
+            .from('organisation')
             .select('*')
-        console.log(_roles, error);
+        console.log(_organisations, error);
 
-        if (!_roles) {
+        if (!_organisations) {
             errorMessage.value = error;
-            roles.value = [];
+            organisations.value = [];
+            toast('Organisations have been fetched !', {
+                description: 'Sunday, December 03, 2023 at 9:00 AM',
+                action: {
+                    label: 'Ok',
+                    onClick: () => console.log('Undo'),
+                },
+            });
         } else {
-            roles.value = _roles;
+            organisations.value = _organisations;
         }
     } catch (error: any) {
         errorMessage.value = `Error fetching users list: ${error.message}`;
     } finally {
-        roleIsFetching.value = false;
+        orgsIsFetching.value = false;
         // console.log("pffffff ....");
     }
 };
 
-const columns: ColumnDef<Role>[] = [
+const columns: ColumnDef<Payment>[] = [
     {
         id: 'select',
         header: ({ table }) => h(Checkbox, {
@@ -202,18 +221,57 @@ const columns: ColumnDef<Role>[] = [
     {
         accessorKey: 'code',
         header: 'Code',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('code')),
+        cell: ({ row }) => h(
+            Avatar,
+            { class: 'h-8 w-8 rounded-lg' },
+            {
+                default: () => [
+                    h(AvatarImage, { src: row.getValue('avatar_url'), alt: row.getValue('username') }),
+                    h(AvatarFallback, { class: 'rounded-lg' }, 'CN')
+                ]
+            }
+        ),
     },
     {
-        accessorKey: 'name',
-        header: 'Name',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+        accessorKey: 'Username',
+        header: 'Username',
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('username')),
     },
     {
-        accessorKey: 'description',
-        header: () => h('div', { class: 'text-left' }, 'Description'),
+        accessorKey: 'email',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
+    },
+    {
+        accessorKey: 'full_name',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Nom', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('full_name')),
+    },
+    {
+        accessorKey: 'role',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Rôle', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('role')),
+    },
+    {
+        accessorKey: 'user_type',
+        header: () => h('div', { class: 'text-right' }, 'Type'),
         cell: ({ row }) => {
-            return h('div', { class: 'text-left font-medium' }, row.getValue('description'))
+            return h('div', { class: 'text-right font-medium' }, row.getValue('user_type'))
         },
     },
     {
@@ -223,7 +281,7 @@ const columns: ColumnDef<Role>[] = [
         cell: ({ row }) => {
             const payment = row.original
 
-            return h('div', { class: 'relative text-center' }, h(DropdownActionRole, {
+            return h('div', { class: 'relative text-center' }, h(DropdownAction, {
                 payment,
                 onExpand: row.toggleExpanded,
             }))
@@ -238,7 +296,7 @@ const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
 
 const table = useVueTable({
-    data: roles,
+    data: organisations,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -259,4 +317,11 @@ const table = useVueTable({
     },
 })
 
+const statuses: Payment['status'][] = ['pending', 'processing', 'success', 'failed']
+function randomize() {
+    data.value = data.value.map(item => ({
+        ...item,
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+    }))
+}
 </script>
