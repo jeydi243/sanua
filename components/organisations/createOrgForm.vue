@@ -50,10 +50,9 @@ async function fetchTypeOrganisation() {
     const { data, error } = await supabase
         .from('lookup')
         .select('lookup_id, description')
-        .eq('type', 'TYPE_ORGANISATION')
 
     if (error) {
-        toast.error('Erreur lors de la récupération des types d'organisation', { description: error.message })
+        // toast.error('Erreur lors de la récupération des types d''organisation', { description: error.message })
         userTypeOptions.value = []
     }
     else if (data) {
@@ -69,23 +68,24 @@ onMounted(async () => {
 const formSchema = toTypedSchema(z.object({
     code: z.string().min(2, 'Le code doit avoir au moins 2 caractères').max(50),
     nom: z.string().min(2, 'Le nom doit avoir au moins 2 caractères').max(50),
-    adresse: z.string().min(5, 'L'adresse doit avoir au moins 5 caractères').max(100),
+    adresse: z.string().min(5).max(100),
     lookup_id: z.string({ required_error: 'Veuillez sélectionner un type.' }),
 }))
 
 async function onSubmit(values: any) {
     apiResponse.value = null
+
     try {
         const supabase = useSupabaseClient()
 
         const { data, error } = await supabase
-            .from('organisations')
+            .from('organisation')
             .insert([
                 { ...values },
             ])
             .select()
             .single()
-
+        openForm.value = false
         if (error) {
             apiResponse.value = error.message
             toast.error('Erreur lors de la création', {
@@ -94,7 +94,7 @@ async function onSubmit(values: any) {
         }
         else if (data) {
             toast.success('Organisation créée avec succès', {
-                description: `L'organisation "${data.nom}" a été ajoutée.`,
+                description: `L'organisation "${data?.nom}" a été ajoutée.`,
             })
             openForm.value = false
         }
@@ -133,7 +133,7 @@ async function onSubmit(values: any) {
                         <FormItem>
                             <FormLabel>Code</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="ex: ORG-001" v-bind="componentField" />
+                                <Input type="text" placeholder="ORG-001" v-bind="componentField" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -151,12 +151,12 @@ async function onSubmit(values: any) {
                         <FormItem>
                             <FormLabel>Adresse</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Adresse complète" v-bind="componentField" />
+                                <Textarea placeholder="Adresse complete" class="border rounded-md placeholder:pl-2.5" v-bind="componentField" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     </FormField>
-                    <FormField name="lookup_id" v-slot="{ field }">
+                    <FormField v-slot="{ field }" name="lookup_id">
                         <FormItem class="flex flex-col">
                             <FormLabel>Type d'organisation</FormLabel>
                             <Popover v-model:open="popoverOpen">
@@ -164,13 +164,13 @@ async function onSubmit(values: any) {
                                     <FormControl>
                                         <Button variant="outline" role="combobox"
                                             :class="cn('w-full justify-between', !field.value && 'text-muted-foreground')">
-                                            {{ field.value ? userTypeOptions.find(option => option.lookup_id ===
-                                                field.value)?.description : "Sélectionner un type..." }}
+                                            {{field.value ? userTypeOptions.find(option => option.lookup_id ===
+                                                field.value)?.description : "Sélectionner un type..."}}
                                             <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
-                                <PopoverContent class="w-[--radix-popover-trigger-width] p-0">
+                                <PopoverContent class="w-[380px] p-0">
                                     <Command>
                                         <CommandInput placeholder="Rechercher un type..." />
                                         <CommandEmpty>
