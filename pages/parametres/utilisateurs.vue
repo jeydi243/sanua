@@ -1,8 +1,7 @@
 <template>
     <div class="w-full ">
-        <!-- <div class="w-[500px] h-svh">
-            <Bar :data="dataChart" :options="optionChart" />
-        </div> -->
+        <h1 class="font-bold text-5xl mb-4">Utilisateurs</h1>
+        <span class="text-md">List de touts les utilisateurs dans l'application </span>
         <div class="flex gap-2 items-center py-4">
             <Input class="max-w-52" placeholder="Rechercher"
                 :model-value="table.getColumn('email')?.getFilterValue() as string"

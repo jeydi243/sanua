@@ -5,5 +5,6 @@ export default withNuxt({
   rules: {
     "import/first": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "vue/first-attribute-linebreak": "off",
   },
 });

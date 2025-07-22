@@ -1,8 +1,7 @@
 <template>
     <div class="w-full ">
-        <!-- <div class="w-[500px] h-svh">
-            <Bar :data="dataChart" :options="optionChart" />
-        </div> -->
+        <h1 class="font-bold text-5xl mb-4">Roles</h1>
+        <span class="text-md">List de touts les roles dans l'application </span>
         <div class="flex gap-2 items-center py-4">
             <Input class="max-w-52" placeholder="Rechercher"
                 :model-value="table.getColumn('code')?.getFilterValue() as string"
@@ -11,8 +10,8 @@
                 Randomize
             </Button> -->
             <Button @click="fetchRoles">
-                <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="roleIsFetching" />
-                <Icon name="cuida:loading-right-outline" style="color: white" v-if="!roleIsFetching" />
+                <Icon v-if="roleIsFetching" name="line-md:loading-twotone-loop" style="color: white" />
+                <Icon v-if="!roleIsFetching" name="cuida:loading-right-outline" style="color: white" />
                 <!-- Actualiser -->
             </Button>
 
