@@ -6,19 +6,17 @@
             <Input class="max-w-52" placeholder="Rechercher"
                 :model-value="table.getColumn('email')?.getFilterValue() as string"
                 @update:model-value=" table.getColumn('email')?.setFilterValue($event)" />
-            <!-- <Button @click="randomize">
-                Randomize
-            </Button> -->
+
             <Button @click="fetchOrganisations">
                 <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="userIsFetching" />
                 <Icon name="cuida:loading-right-outline" style="color: white" v-if="!userIsFetching" />
-                <!-- Actualiser -->
+
             </Button>
 
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline" class="ml-auto">
-                        Columns
+                        Colonnes
                         <ChevronDown class="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -34,11 +32,6 @@
             </DropdownMenu>
 
             <CreateOrgForm />
-            <!-- <Button>
-
-                <PlusIcon class="w-4 h-4 mr-2" />
-                Créer un organisation
-            </Button> -->
         </div>
         <div class="rounded-md border">
             <Table>
@@ -68,7 +61,7 @@
 
                     <TableRow v-else>
                         <TableCell :colspan="columns.length" class="h-24 text-center">
-                            No results.
+                            Aucune organisation !
                         </TableCell>
                     </TableRow>
                 </TableBody>
@@ -144,20 +137,21 @@ import {
 } from '@/components/ui/table'
 import DropdownAction from '@/components/users/dropdownAction.vue'
 import type { User } from '@supabase/supabase-js'
-import CreateUserForm from '~/components/users/createUserForm.vue'
 
-export interface Payment {
-    id: string
-    amount: number
-    status: 'pending' | 'processing' | 'success' | 'failed'
-    email: string
-}
 export interface responseUsers {
     users: User[];
     total: number;
     page: number;
     perPage: number;
     totalPages: number;
+}
+
+export interface Organisation {
+    id: User[];
+    lookup_id: number;
+    nom: number;
+    description: number;
+    created_at: string;
 }
 
 
@@ -202,7 +196,7 @@ const fetchOrganisations = async () => {
     }
 };
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<Organisation>[] = [
     {
         id: 'select',
         header: ({ table }) => h(Checkbox, {
@@ -233,45 +227,31 @@ const columns: ColumnDef<Payment>[] = [
         ),
     },
     {
-        accessorKey: 'Username',
-        header: 'Username',
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('username')),
-    },
-    {
-        accessorKey: 'email',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
-        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email')),
-    },
-    {
-        accessorKey: 'full_name',
+        accessorKey: 'nom',
         header: ({ column }) => {
             return h(Button, {
                 variant: 'ghost',
                 onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
             }, () => ['Nom', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
-        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('full_name')),
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('nom')),
     },
     {
-        accessorKey: 'role',
+        accessorKey: 'description',
         header: ({ column }) => {
             return h(Button, {
                 variant: 'ghost',
                 onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Rôle', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+            }, () => ['Description', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
-        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('role')),
+        cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('description')),
     },
+
     {
-        accessorKey: 'user_type',
-        header: () => h('div', { class: 'text-right' }, 'Type'),
+        accessorKey: 'lookup_id',
+        header: () => h('div', { class: 'text-right' }, "Type d'organisation"),
         cell: ({ row }) => {
-            return h('div', { class: 'text-right font-medium' }, row.getValue('user_type'))
+            return h('div', { class: 'text-right font-medium' }, row.getValue('lookup_id'))
         },
     },
     {
@@ -317,11 +297,4 @@ const table = useVueTable({
     },
 })
 
-const statuses: Payment['status'][] = ['pending', 'processing', 'success', 'failed']
-function randomize() {
-    data.value = data.value.map(item => ({
-        ...item,
-        status: statuses[Math.floor(Math.random() * statuses.length)],
-    }))
-}
 </script>
