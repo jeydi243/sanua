@@ -6,15 +6,11 @@ import {
   BookOpen,
   Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   Settings2,
   SquareTerminal
 } from 'lucide-vue-next'
 import NavMain from '@/components/NavMain.vue'
-import NavProjects from '@/components/NavProjects.vue'
 import NavUser from '@/components/NavUser.vue'
 import TeamSwitcher from '@/components/TeamSwitcher.vue'
 

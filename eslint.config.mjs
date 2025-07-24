@@ -6,5 +6,7 @@ export default withNuxt({
     "import/first": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "vue/first-attribute-linebreak": "off",
+    "import/consistent-type-specifier-style":"off",
+    "@typescript-eslint/no-unused-vars":"warn"
   },
 });
