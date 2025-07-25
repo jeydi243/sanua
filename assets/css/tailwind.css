@@ -125,6 +125,7 @@
 
 html {
   color-scheme: light dark;
+  font-family: 'JetBrains Mono', sans-serif;
 }
 html.dark {
   color-scheme: dark;

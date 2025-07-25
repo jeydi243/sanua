@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
 const user = useSupabaseUser();
-const userTo = { ...user, src: 'https://www.linkedin.com' }
+const _userTo = { ...user, src: 'https://www.linkedin.com' }
 const data = {
   user: {
     name: 'shadcn',
