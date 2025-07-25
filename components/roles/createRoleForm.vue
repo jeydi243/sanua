@@ -73,7 +73,7 @@ async function onSubmit(values: any) {
         <Dialog v-model="openForm">
             <DialogTrigger as-child>
                 <Button>
-                    <PlusIcon class="w-4 h-4 mr-2" />
+                    <PlusIcon class="w-4 h-4" />
                     Créer un role
                 </Button>
             </DialogTrigger>

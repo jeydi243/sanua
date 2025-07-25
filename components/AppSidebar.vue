@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SidebarProps } from '@/components/ui/sidebar'
+import type { SidebarProps } from "@/components/ui/sidebar";
 
 import {
   AudioWaveform,
@@ -8,11 +8,11 @@ import {
   Command,
   GalleryVerticalEnd,
   Settings2,
-  SquareTerminal
-} from 'lucide-vue-next'
-import NavMain from '@/components/NavMain.vue'
-import NavUser from '@/components/NavUser.vue'
-import TeamSwitcher from '@/components/TeamSwitcher.vue'
+  SquareTerminal,
+} from "lucide-vue-next";
+import NavMain from "@/components/NavMain.vue";
+import NavUser from "@/components/NavUser.vue";
+import TeamSwitcher from "@/components/TeamSwitcher.vue";
 
 import {
   Sidebar,
@@ -20,144 +20,138 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from '@/components/ui/sidebar'
+} from "@/components/ui/sidebar";
 
 const props = withDefaults(defineProps<SidebarProps>(), {
-  collapsible: 'icon',
-})
+  collapsible: "icon",
+});
+
 const user = useSupabaseUser();
-const _userTo = { ...user, src: 'https://www.linkedin.com' }
+const _userTo = { ...user, src: "https://www.linkedin.com" };
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: 'http://localhost:3000/avatars/shadcn.jpg',
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "http://localhost:3000/avatars/shadcn.jpg",
   },
   teams: [
     {
-      name: 'Acme Inc',
+      name: "Acme Inc",
       logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
+      plan: "Enterprise",
     },
     {
-      name: 'Acme Corp.',
+      name: "Acme Corp.",
       logo: AudioWaveform,
-      plan: 'Startup',
+      plan: "Startup",
     },
     {
-      name: 'Evil Corp.',
+      name: "Evil Corp.",
       logo: Command,
-      plan: 'Free',
+      plan: "Free",
     },
   ],
   navMain: [
     {
-      title: 'Playground',
-      url: '#',
+      title: "Playground",
+      url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: 'History',
-          url: '#',
+          title: "History",
+          url: "#",
         },
         {
-          title: 'Starred',
-          url: '#',
+          title: "Starred",
+          url: "#",
         },
         {
-          title: 'Settings',
-          url: '#',
+          title: "Settings",
+          url: "#",
         },
       ],
     },
     {
-      title: 'Caissier',
-      url: '/',
+      title: "Caissier",
+      url: "/",
       icon: Bot,
       items: [
         {
-          "title": "Tableau de Bord Caisse",
-          "icon": "dashboard",
-          "url": "/cashier/dashboard"
-        },
-        { "title": "Enregistrer un Dépôt", "url": "/cashier/deposit" },
-        { "title": "Enregistrer un Retrait", "url": "/cashier/withdrawal" },
-        { "title": "Enregistrer un Remboursement Prêt", "url": "/cashier/loan-payment" },
-        {
-          "title": "Historique des Transactions",
-          "icon": "history",
-          "url": "/transactions/my-history"
+          title: "Transactions",
+          icon: "history",
+          url: "/cashier/transactions",
         },
         {
-          "title": "Consultation Compte Client",
-          "icon": "search-dollar",
-          "url": "/accounts/search"
+          title: "Tableau de Bord",
+          icon: "dashboard",
+          url: "/cashier/dashboard",
         },
+        { title: "Enregistrer un Dépôt", url: "/cashier/deposit" },
+        { title: "Enregistrer un Retrait", url: "/cashier/withdrawal" },
         {
-          "title": "Rapports de Caisse Journaliers",
-          "icon": "file-alt",
-          "url": "/reports/daily-cash"
-        },
-        {
-          "title": "Alertes (Caisse)",
-          "icon": "bell",
-          "url": "/alerts/cashier"
+          title: "Rapports de Caisse Journaliers",
+          icon: "file-alt",
+          url: "/reports/daily-cash",
         }
       ],
     },
     {
-      title: 'Documentation',
-      url: '#',
+      title: "Documentation",
+      url: "#",
       icon: BookOpen,
       items: [
         {
-          title: 'Introduction',
-          url: '#',
+          title: "Introduction",
+          url: "#",
         },
         {
-          title: 'Get Started',
-          url: '#',
+          title: "Get Started",
+          url: "#",
         },
         {
-          title: 'Tutorials',
-          url: '#',
+          title: "Tutorials",
+          url: "#",
         },
         {
-          title: 'Changelog',
-          url: '#',
+          title: "Changelog",
+          url: "#",
         },
       ],
     },
     {
-      title: 'Parametres',
-      url: '#',
+      title: "Parametres",
+      url: "#",
       icon: Settings2,
       items: [
         {
-          title: 'General',
-          url: '/parametres',
+          title: "General",
+          url: "/parametres",
         },
         {
-          title: 'Utilisateurs',
-          url: '/parametres/utilisateurs',
+          title: "Utilisateurs",
+          url: "/parametres/utilisateurs",
         },
         {
-          title: 'Roles',
-          url: '/parametres/roles',
+          title: "Roles",
+          url: "/parametres/roles",
         },
         {
-          title: 'Lookups',
-          url: '/parametres/lookups',
+          title: "Lookups",
+          url: "/parametres/lookups",
         },
         {
-          title: 'Organisations',
-          url: '/parametres/organisations',
+          title: "Clients",
+          url: "/clients",
+        },
+        {
+          title: "Organisations",
+          url: "/parametres/organisations",
         },
       ],
     },
   ],
-}
+};
 </script>
 
 <template>
@@ -167,7 +161,6 @@ const data = {
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />
-      <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>
     <SidebarFooter>
       <NavUser :user="data.user" />

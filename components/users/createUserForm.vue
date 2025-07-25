@@ -4,7 +4,7 @@ import * as z from 'zod'
 import { PlusIcon, AlertCircle } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
     Dialog,
     DialogContent,
@@ -17,7 +17,7 @@ import {
 import {
     Form,
     FormControl,
-    FormDescription,
+    
     FormField,
     FormItem,
     FormLabel,
@@ -71,7 +71,7 @@ async function onSubmit(values: any) {
         <Dialog v-model="openForm">
             <DialogTrigger as-child>
                 <Button>
-                    <PlusIcon class="w-4 h-4 mr-2" />
+                    <PlusIcon class="w-4 h-4" />
                     Créer un utilisateur
                 </Button>
             </DialogTrigger>

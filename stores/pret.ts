@@ -89,6 +89,27 @@ export const usePretStore = defineStore('pret', {
     },
 
     /**
+     * Récupère tous les prêts pour un client donné.
+     * @param clientId - L'ID du client pour lequel récupérer les prêts.
+     */
+    async fetchPretsForClient(clientId: string) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const supabase = useSupabaseClient();
+        const { data, error } = await supabase.from('pret').select('*').eq('client_id', clientId);
+        if (error) throw error;
+        // On peut choisir de stocker ces prêts dans un état séparé ou de les retourner directement
+        return { data, error: null, loading: false };
+      } catch (err: any) {
+        this.error = err.message;
+        return { data: null, error: err.message, loading: false };
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
      * Met à jour un prêt existant.
      * @param pret - L'objet prêt avec les informations mises à jour.
      */

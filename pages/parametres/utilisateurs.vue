@@ -10,8 +10,8 @@
                 Randomize
             </Button> -->
             <Button @click="fetchUsers">
-                <Icon name="line-md:loading-twotone-loop" style="color: white" v-if="userIsFetching" />
-                <Icon name="cuida:loading-right-outline" style="color: white" v-if="!userIsFetching" />
+                <Icon v-if="userIsFetching" name="line-md:loading-twotone-loop" style="color: white" />
+                <Icon v-else name="cuida:loading-right-outline" style="color: white" />
                 <!-- Actualiser -->
             </Button>
 
@@ -24,8 +24,8 @@
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuCheckboxItem
-                        v-for="column in table.getAllColumns().filter((column) => column.getCanHide())" :key="column.id"
-                        class="capitalize" :model-value="column.getIsVisible()" @update:model-value="(value) => {
+                        v-for="column in table.getAllColumns().filter((column:any) => column.getCanHide())" :key="column.id"
+                        class="capitalize" :model-value="column.getIsVisible()" @update:model-value="(value:any) => {
                             column.toggleVisibility(!!value)
                         }">
                         {{ column.id }}
@@ -114,29 +114,13 @@ import {
 } from '@tanstack/vue-table'
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
-import {
-    Chart as ChartJS,
-    Title,
-    Tooltip,
-    Legend,
-    BarElement,
-    CategoryScale,
-    LinearScale
-} from 'chart.js'
-import { Bar } from 'vue-chartjs'
+
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
 } from '@/components/ui/avatar'
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
-const dataChart = {
-    labels: ['January', 'February', 'March'],
-    datasets: [{ data: [40, 20, 12] }]
-}
-const optionChart = {
-    responsive: true
-}
+
 const supabase = useSupabaseClient()
 const users = ref([])
 // import { valueUpdater } from '@/utils'
@@ -185,7 +169,7 @@ export interface responseUsers {
 onMounted(async () => {
     await fetchUsers()
 })
-
+useHead({ title: 'Sanua - Utilisateurs' })
 // const users = shallowRef<User[]>([])
 const userIsFetching = ref(false)
 const errorMessage = ref('')
@@ -203,7 +187,7 @@ const fetchUsers = async () => {
     try {
         // Vous pouvez passer des paramètres de pagination ici, ex: ?page=2&perPage=50
 
-        let { data: profiles, error } = await supabase
+        const { data: profiles, error } = await supabase
             .from('profiles')
             .select('*')
         console.log(profiles, error);
@@ -227,12 +211,12 @@ const columns: ColumnDef<Payment>[] = [
         id: 'select',
         header: ({ table }) => h(Checkbox, {
             'modelValue': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-            'onUpdate:modelValue': value => table.toggleAllPageRowsSelected(!!value),
+            'onUpdate:modelValue': (value: any) => table.toggleAllPageRowsSelected(!!value),
             'ariaLabel': 'Select all',
         }),
         cell: ({ row }) => h(Checkbox, {
             'modelValue': row.getIsSelected(),
-            'onUpdate:modelValue': value => row.toggleSelected(!!value),
+            'onUpdate:modelValue': (value: any) => row.toggleSelected(!!value),
             'ariaLabel': 'Select row',
         }),
         enableSorting: false,
@@ -337,11 +321,5 @@ const table = useVueTable({
     },
 })
 
-const statuses: Payment['status'][] = ['pending', 'processing', 'success', 'failed']
-function randomize() {
-    data.value = data.value.map(item => ({
-        ...item,
-        status: statuses[Math.floor(Math.random() * statuses.length)],
-    }))
-}
+
 </script>

@@ -1,9 +1,19 @@
 import type { User } from '@supabase/supabase-js'
 import { defineStore } from 'pinia'
 
+// Interface pour la table Lookup
+interface Lookup {
+  id?: number;
+  type: string; // Ex: 'TYPE_PRET', 'STATUT_CLIENT'
+  code: string; // Ex: 'PERSO', 'ENTREP'
+  valeur: string; // Ex: 'Prêt personnel', 'Prêt entreprise'
+  description?: string;
+}
+
 interface AdminState {
     currentUser: User | null
     users: User[]
+    lookups: Lookup[] // Ajout de l'état pour les lookups
     isLoading: boolean
     error: string | null
     isAuthenticated: boolean
@@ -14,6 +24,7 @@ export const useAdminStore = defineStore('admin', {
     state: (): AdminState => ({
         currentUser: null,
         users: [],
+        lookups: [], // Initialisation du tableau de lookups
         isLoading: false,
         error: null,
         isAuthenticated: false,
@@ -26,6 +37,13 @@ export const useAdminStore = defineStore('admin', {
 
         // Get all users
         getAllUsers: (state) => state.users,
+
+        // Get all lookups
+        getAllLookups: (state) => state.lookups,
+
+        // Get lookups by type
+        getLookupsByType: (state) => (type: string) =>
+            state.lookups.filter(lookup => lookup.type === type),
 
         // Get users by role
         getUsersByRole: (state) => (role: string) =>
@@ -42,9 +60,105 @@ export const useAdminStore = defineStore('admin', {
     },
  
     actions: {
+        // =================================================================
+        // Actions CRUD pour la table 'lookup'
+        // =================================================================
+
+        /**
+         * Crée une nouvelle entrée dans la table lookup.
+         * @param lookup - L'objet lookup à créer.
+         */
+        async createLookup(lookup: Omit<Lookup, 'id'>) {
+            this.isLoading = true;
+            this.errorMessage = '';
+            try {
+                const supabase = useSupabaseClient();
+                const { data, error } = await supabase.from('lookup').insert([lookup]).select().single();
+                if (error) throw new Error(error.message);
+                if (data) {
+                    this.lookups.push(data);
+                }
+                return { data, error: null, loading: false };
+            } catch (err: any) {
+                this.errorMessage = `Error creating lookup: ${err.message}`;
+                return { data: null, error: err.message, loading: false };
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        /**
+         * Récupère toutes les entrées de la table lookup.
+         */
+        async fetchLookups() {
+            this.isLoading = true;
+            this.errorMessage = '';
+            try {
+                const supabase = useSupabaseClient();
+                const { data, error } = await supabase.from('lookup').select('*');
+                if (error) throw new Error(error.message);
+                this.lookups = data || [];
+                return { data, error: null, loading: false };
+            } catch (err: any) {
+                this.errorMessage = `Error fetching lookups: ${err.message}`;
+                return { data: null, error: err.message, loading: false };
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        /**
+         * Met à jour une entrée dans la table lookup.
+         * @param lookup - L'objet lookup avec les informations mises à jour.
+         */
+        async updateLookup(lookup: Lookup) {
+            this.isLoading = true;
+            this.errorMessage = '';
+            try {
+                const supabase = useSupabaseClient();
+                const { data, error } = await supabase.from('lookup').update(lookup).eq('id', lookup.id).select().single();
+                if (error) throw new Error(error.message);
+                if (data) {
+                    const index = this.lookups.findIndex(l => l.id === lookup.id);
+                    if (index !== -1) this.lookups[index] = data;
+                }
+                return { data, error: null, loading: false };
+            } catch (err: any) {
+                this.errorMessage = `Error updating lookup: ${err.message}`;
+                return { data: null, error: err.message, loading: false };
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        /**
+         * Supprime une entrée de la table lookup par son ID.
+         * @param id - L'ID de l'entrée à supprimer.
+         */
+        async deleteLookup(id: number) {
+            this.isLoading = true;
+            this.errorMessage = '';
+            try {
+                const supabase = useSupabaseClient();
+                const { error }.from('lookup').delete().eq('id', id);
+                if (error) throw new Error(error.message);
+                this.lookups = this.lookups.filter(l => l.id !== id);
+                return { data: { success: true }, error: null, loading: false };
+            } catch (err: any) {
+                this.errorMessage = `Error deleting lookup: ${err.message}`;
+                return { data: null, error: err.message, loading: false };
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        // =================================================================
+        // Actions pour la gestion des utilisateurs (via API server)
+        // =================================================================
+
         // Fonction pour récupérer un utilisateur par ID (déjà présente)
         async fetchUserById(userId: string) {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 const response = await fetch(`/api/admin/users/${userId}`);
@@ -58,13 +172,13 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error fetching user: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         // Fonction pour lister les utilisateurs
         async fetchUsers() {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 // Vous pouvez passer des paramètres de pagination ici, ex: ?page=2&perPage=50
@@ -79,13 +193,13 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error fetching users list: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         // Fonction pour créer un utilisateur
         async createUser(email: string, password: string, metadata?: object) {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 const response = await fetch('/api/admin/users/create', {
@@ -103,13 +217,13 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error creating user: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         // Fonction pour mettre à jour un utilisateur
         async updateUser(userId: string, updates: object) {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 const response = await fetch(`/api/admin/users/update/${userId}`, {
@@ -127,13 +241,13 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error updating user: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         // Fonction pour supprimer un utilisateur
         async deleteUser(userId: string) {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 const response = await fetch(`/api/admin/users/delete/${userId}`, {
@@ -150,13 +264,13 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error deleting user: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         // Fonction pour inviter un utilisateur
         async inviteUser(email: string, metadata?: object) {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 const response = await fetch('/api/admin/users/invite', {
@@ -173,13 +287,13 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error inviting user: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         },
 
         // Fonction pour générer un lien (ex: réinitialisation de mot de passe)
         async generateAuthLink(email: string, type: string, options?: object) {
-            this.loading = true;
+            this.isLoading = true;
             this.errorMessage = '';
             try {
                 const response = await fetch('/api/admin/users/generate-link', {
@@ -197,7 +311,7 @@ export const useAdminStore = defineStore('admin', {
             } catch (error: any) {
                 this.errorMessage = `Error generating link: ${error.message}`;
             } finally {
-                this.loading = false;
+                this.isLoading = false;
             }
         }
     }

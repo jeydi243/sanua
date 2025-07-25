@@ -111,7 +111,7 @@ async function onSubmit(values: any) {
         <Dialog v-model:open="openForm">
             <DialogTrigger as-child>
                 <Button>
-                    <PlusIcon class="w-4 h-4 mr-2" />
+                    <PlusIcon class="w-4 h-4 " />
                     Ajouter
                 </Button>
             </DialogTrigger>

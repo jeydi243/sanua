@@ -80,6 +80,23 @@ export const useClientStore = defineStore('client', {
       }
     },
 
+    async fetchClientById(id: string) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const supabase = useSupabaseClient();
+        const { data, error } = await supabase.from('client').select('*').eq('id', id).single();
+        if (error) throw error;
+        // On peut choisir de le stocker dans un état 'currentClient' ou simplement de le retourner
+        return { data, error: null, loading: false };
+      } catch (err: any) {
+        this.error = err.message;
+        return { data: null, error: err.message, loading: false };
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async updateClient(client: Client) {
       this.loading = true;
       this.error = null;
