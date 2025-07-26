@@ -112,12 +112,10 @@ export interface Lookup {
 }
 
 export interface AdminState {
-  currentUser: User | null;
   users: User[];
   lookups: Lookup[]; // Ajout de l'état pour les lookups
   isLoading: boolean;
   error: string | null;
-  isAuthenticated: boolean;
   errorMessage: string;
 }
 export interface UserState {

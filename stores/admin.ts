@@ -1,21 +1,16 @@
 import { defineStore } from "pinia";
-import type { User } from "@supabase/supabase-js";
-import type { AdminState } from "../types";
+import type { AdminState, Lookup } from "../types";
 
 export const useAdminStore = defineStore("admin", {
   state: (): AdminState => ({
-    currentUser: null,
     users: [],
     lookups: [], // Initialisation du tableau de lookups
     isLoading: false,
     error: null,
-    isAuthenticated: false,
     errorMessage: "",
   }),
 
   getters: {
-    // Get current admin user
-    getCurrentUser: (state: AdminState) => state.currentUser,
 
     // Get all users
     getAllUsers: (state: AdminState) => state.users,
@@ -26,13 +21,6 @@ export const useAdminStore = defineStore("admin", {
     // Get lookups by type
     getLookupsByClasseId: (state: AdminState) => (id: string) =>
       state.lookups.filter((lookup) => lookup.classe_id === id),
-
-    // Get users by role
-    getUsersByRole: (state: AdminState) => (role: string) =>
-      state.users.filter((user) => user.role.contains(role)),
-
-    // Check if admin is logged in
-    isLoggedIn: (state: AdminState) => state.isAuthenticated,
 
     // Get loading state
     getLoadingState: (state: AdminState) => state.isLoading,
@@ -160,9 +148,6 @@ export const useAdminStore = defineStore("admin", {
         const result = await response.json();
         if (!response.ok) {
           this.errorMessage = result.message || "An unknown error occurred.";
-          this.currentUser = null;
-        } else {
-          this.currentUser = result.user;
         }
       } catch (error: any) {
         this.errorMessage = `Error fetching user: ${error.message}`;

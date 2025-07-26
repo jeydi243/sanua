@@ -3,13 +3,13 @@
     <div class="flex flex-row items-center justify-center align-middle">
       <DrawerContent class="w-[70%] place-self-center">
         <DrawerHeader>
-          <DrawerTitle>Détails de la classe</DrawerTitle>
+          <DrawerTitle>Liste des lookups de cette classe</DrawerTitle>
           <DrawerDescription>
             Voici les détails de la classe sélectionnée.
           </DrawerDescription>
         </DrawerHeader>
 
-        <div class="pl-4 pr-10 w-full overflow-y-auto mt-8">
+        <div class="pl-4 pr-10 w-full overflow-y-auto mt-8 mb-10">
           <div class="flex flex-row justify-between mb-2">
             <p>{{ classeId }}</p>
 
@@ -19,14 +19,14 @@
             </Button>
           </div>
           <!-- Liste des lookups -->
-          <LookupsList :classe-id="classeId" />
+          <LookupsList :classe-id="classeId as string" />
         </div>
 
-        <DrawerFooter>
+        <!-- <DrawerFooter>
           <DrawerClose as-child>
             <Button variant="outline"> Fermer </Button>
           </DrawerClose>
-        </DrawerFooter>
+        </DrawerFooter> -->
       </DrawerContent>
     </div>
   </Drawer>
@@ -46,9 +46,9 @@ import { Button } from "@/components/ui/button";
 import LookupsList from "./LookupsList.vue";
 import { PlusIcon } from "lucide-vue-next";
 
-const props = defineProps<{
+defineProps<{
   open: boolean;
-  classeId: string;
+  classeId: string | null;
 }>();
 
 const emit = defineEmits(["update:open"]);

@@ -3,24 +3,14 @@
     <h1 class="font-bold text-5xl mb-4">Classes</h1>
     <span class="text-md">List de toutes les classes dans l'application </span>
     <div class="flex gap-2 items-center py-4">
-      <Input
-        class="max-w-52"
-        placeholder="Rechercher"
-        :model-value="table.getColumn('email')?.getFilterValue() as string"
-        @update:model-value="table.getColumn('email')?.setFilterValue($event)"
-      />
+      <Input class="max-w-52" placeholder="Rechercher"
+        :model-value="table.getColumn('email')?.getFilterValue() as string" @update:model-value="
+          table.getColumn('email')?.setFilterValue($event)
+          " />
 
       <Button @click="fetchClasses">
-        <Icon
-          name="line-md:loading-twotone-loop"
-          style="color: white"
-          v-if="userIsFetching"
-        />
-        <Icon
-          name="cuida:loading-right-outline"
-          style="color: white"
-          v-if="!userIsFetching"
-        />
+        <Icon v-if="classeIsFetching" name="line-md:loading-twotone-loop" style="color: white" />
+        <Icon v-else name="cuida:loading-right-outline" style="color: white" />
       </Button>
 
       <DropdownMenu>
@@ -31,19 +21,14 @@
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuCheckboxItem
-            v-for="column in table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())"
-            :key="column.id"
-            class="capitalize"
-            :model-value="column.getIsVisible()"
-            @update:model-value="
+          <DropdownMenuCheckboxItem v-for="column in table
+            .getAllColumns()
+            .filter((column) => column.getCanHide())" :key="column.id" class="capitalize"
+            :model-value="column.getIsVisible()" @update:model-value="
               (value) => {
                 column.toggleVisibility(!!value);
               }
-            "
-          >
+            ">
             {{ column.id }}
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
@@ -54,48 +39,28 @@
     <div class="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow
-            v-for="headerGroup in table.getHeaderGroups()"
-            :key="headerGroup.id"
-          >
+          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
-              <FlexRender
-                v-if="!header.isPlaceholder"
-                :render="header.column.columnDef.header"
-                :props="header.getContext()"
-              />
+              <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header"
+                :props="header.getContext()" />
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody v-motion-group>
           <template v-if="table.getRowModel().rows?.length">
-            <TransitionGroup
-              name="list"
-              tag="tbody"
-              appear
-              :css="false"
-              @before-enter="onBeforeEnter"
-              @enter="onEnter"
-              @leave="onLeave"
-            >
-              <TableRow
-                v-for="(row, index) in table.getRowModel().rows"
-                :key="row.id"
-                :data-state="row.getIsSelected() && 'selected'"
-                class="cursor-pointer"
-                @click="handleRowClick(row)"
-                v-motion
-                :initial="{ opacity: 0, y: 100 }"
-                :enter="{ opacity: 1, y: 0, transition: { delay: index * 100 } }"
-              >
-                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                  <FlexRender
-                    :render="cell.column.columnDef.cell"
-                    :props="cell.getContext()"
-                  />
-                </TableCell>
-              </TableRow>
-            </TransitionGroup>
+            <TableRow v-for="(row, index) in table.getRowModel().rows" :key="row.id" v-motion
+              :data-state="row.getIsSelected() && 'selected'" class="cursor-pointer" :initial="{ opacity: 0, y: 20 }"
+              :enter="{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  delay: index * 50,
+                },
+              }" @click="handleRowClick(row)">
+              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              </TableCell>
+            </TableRow>
           </template>
 
           <TableRow v-else>
@@ -113,20 +78,10 @@
         {{ table.getFilteredRowModel().rows.length }} row(s) selected.
       </div>
       <div class="space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="!table.getCanPreviousPage()"
-          @click="table.previousPage()"
-        >
+        <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
           Previous
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="!table.getCanNextPage()"
-          @click="table.nextPage()"
-        >
+        <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
           Next
         </Button>
       </div>
@@ -139,7 +94,7 @@
 
 <script setup lang="ts">
 import { Toaster } from "@/components/ui/sonner";
-import CreateClasseForm from "@/components/classes/createClasseForm.vue";
+
 import ClasseDrawer from "@/components/classes/ClasseDrawer.vue";
 import type {
   ColumnDef,
@@ -160,10 +115,8 @@ import {
 import { ArrowUpDown, ChevronDown } from "lucide-vue-next";
 import { toast } from "vue-sonner";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 const isDrawerOpen = ref(false);
-const selectedClasseId = ref<number | null>(null);
+const selectedClasseId = ref<string | null>(null);
 
 const handleRowClick = (row: any) => {
   selectedClasseId.value = row.original.id;
@@ -190,24 +143,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DropdownAction from "@/components/users/dropdownAction.vue";
-import type { User } from "@supabase/supabase-js";
+import type { PostgrestError } from "@supabase/supabase-js";
 
 onMounted(async () => {
   await fetchClasses();
 });
 
-const classes = shallowRef<[]>([]);
-const orgsIsFetching = ref(false);
-const errorMessage = ref("");
+const classes = shallowRef<Tables<"classe">[]>([]);
+const classeIsFetching = ref(false);
+const errorMessage = ref<string | PostgrestError | null>(null);
 
 const fetchClasses = async () => {
-  orgsIsFetching.value = true;
-  errorMessage.value = "";
+  classeIsFetching.value = true;
+  errorMessage.value = null;
 
   try {
     // Vous pouvez passer des paramètres de pagination ici, ex: ?page=2&perPage=50
 
-    let { data: _classes, error } = await supabase.from("classe").select("*");
+    const { data: _classes, error } = await supabase
+      .from("classe")
+      .select("*");
     console.log(_classes, error);
 
     if (!_classes) {
@@ -226,12 +181,12 @@ const fetchClasses = async () => {
   } catch (error: any) {
     errorMessage.value = `Error fetching users list: ${error.message}`;
   } finally {
-    orgsIsFetching.value = false;
+    classeIsFetching.value = false;
     // console.log("pffffff ....");
   }
 };
 
-const columns: ColumnDef<Organisation>[] = [
+const columns: ColumnDef<Tables<"classe">>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -255,20 +210,7 @@ const columns: ColumnDef<Organisation>[] = [
   {
     accessorKey: "code",
     header: "Code",
-    cell: ({ row }) =>
-      h(
-        Avatar,
-        { class: "h-8 w-8 rounded-lg" },
-        {
-          default: () => [
-            h(AvatarImage, {
-              src: row.getValue("avatar_url"),
-              alt: row.getValue("username"),
-            }),
-            h(AvatarFallback, { class: "rounded-lg" }, "CN"),
-          ],
-        }
-      ),
+    cell: ({ row }) => row.getValue("code"),
   },
   {
     accessorKey: "nom",
@@ -336,6 +278,7 @@ const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
 import { useNow } from "@vueuse/core";
+import type { Tables } from "~/types/supabase";
 
 const table = useVueTable({
   data: classes,
@@ -352,7 +295,8 @@ const table = useVueTable({
     valueUpdater(updaterOrValue, columnVisibility),
   onRowSelectionChange: (updaterOrValue) =>
     valueUpdater(updaterOrValue, rowSelection),
-  onExpandedChange: (updaterOrValue) => valueUpdater(updaterOrValue, expanded),
+  onExpandedChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, expanded),
   state: {
     get sorting() {
       return sorting.value;

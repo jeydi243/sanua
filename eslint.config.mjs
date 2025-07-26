@@ -8,16 +8,6 @@ export default withNuxt({
     "vue/first-attribute-linebreak": "off",
     "import/consistent-type-specifier-style": "off",
     "@typescript-eslint/no-unused-vars": "warn",
-    "vue/max-attributes-per-line": [
-      "error",
-      {
-        singleline: {
-          max: 10, // Mettez un nombre élevé, supérieur au nombre max d'attributs que vous avez habituellement
-        },
-        multiline: {
-          max: 1,
-        },
-      },
-    ],
+    "vue/max-attributes-per-line": "off",
   },
 });

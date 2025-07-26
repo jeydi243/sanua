@@ -1,4 +1,3 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { defineStore } from "pinia";
 import type { UserState } from "~/types";
 
@@ -17,10 +16,7 @@ export const useUserStore = defineStore("user", {
       this.loading = true;
       this.error = null;
       try {
-        // Accédez à l'instance Supabase via useNuxtApp().$supabase
-        // Note: useNuxtApp() doit être appelé dans le contexte d'une application Nuxt,
-        // ce qui est le cas dans les actions de Pinia car Pinia est initialisé par Nuxt.
-²        const supabase = useSupabaseClient();
+        const supabase = useSupabaseClient();
 
         const {
           data: { user },
