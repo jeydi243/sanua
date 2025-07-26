@@ -24,7 +24,7 @@ export const useAdminStore = defineStore('admin', {
     state: (): AdminState => ({
         currentUser: null,
         users: [],
-        lookups: [], // Initialisation du tableau de lookups
+        lookups: Lookup[], // Initialisation du tableau de lookups
         isLoading: false,
         error: null,
         isAuthenticated: false,
@@ -33,30 +33,30 @@ export const useAdminStore = defineStore('admin', {
 
     getters: {
         // Get current admin user
-        getCurrentUser: (state) => state.currentUser,
+        getCurrentUser: (state:AdminState) => state.currentUser,
 
         // Get all users
-        getAllUsers: (state) => state.users,
+        getAllUsers: (state:AdminState) => state.users,
 
         // Get all lookups
-        getAllLookups: (state) => state.lookups,
+        getAllLookups: (state:AdminState) => state.lookups,
 
         // Get lookups by type
-        getLookupsByType: (state) => (type: string) =>
-            state.lookups.filter(lookup => lookup.type === type),
+        getLookupsByClasseId: (state:AdminState) => (id: string) =>
+            state.lookups.filter(lookup => lookup.classe_id === id),
 
         // Get users by role
-        getUsersByRole: (state) => (role: string) =>
+        getUsersByRole: (state:AdminState) => (role: string) =>
             state.users.filter(user => user.role.contains(role)),
 
         // Check if admin is logged in
-        isLoggedIn: (state) => state.isAuthenticated,
+        isLoggedIn: (state:AdminState) => state.isAuthenticated,
 
         // Get loading state
-        getLoadingState: (state) => state.isLoading,
+        getLoadingState: (state:AdminState) => state.isLoading,
 
         // Get error message
-        getError: (state) => state.error
+        getError: (state:AdminState) => state.error
     },
  
     actions: {
@@ -136,11 +136,11 @@ export const useAdminStore = defineStore('admin', {
          * @param id - L'ID de l'entrée à supprimer.
          */
         async deleteLookup(id: number) {
-            this.isLoading = true;
-            this.errorMessage = '';
+            const isLoading = true;
+            const errorMessage = '';
             try {
                 const supabase = useSupabaseClient();
-                const { error }.from('lookup').delete().eq('id', id);
+                const { error } = await supabase.from('lookup').delete().eq('id', id);
                 if (error) throw new Error(error.message);
                 this.lookups = this.lookups.filter(l => l.id !== id);
                 return { data: { success: true }, error: null, loading: false };

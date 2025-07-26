@@ -52,7 +52,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     // Private keys are only available on the server
-    apiSecret: "123",
+    apiSecret: "12345678",
 
     // Public keys that are exposed to the client
     public: {
@@ -61,9 +61,6 @@ export default defineNuxtConfig({
     },
   },
   shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
     prefix: "",
     /**
      * Directory that the component lives in.

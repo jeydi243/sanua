@@ -56,7 +56,7 @@ const data = {
       title: "Playground",
       url: "#",
       icon: SquareTerminal,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: "History",
@@ -123,6 +123,7 @@ const data = {
       title: "Parametres",
       url: "#",
       icon: Settings2,
+      isActive: true,
       items: [
         {
           title: "General",
@@ -158,6 +159,7 @@ const data = {
   <Sidebar v-bind="props">
     <SidebarHeader>
       <TeamSwitcher :teams="data.teams" />
+      <Button variant="outline">New</Button>
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />
