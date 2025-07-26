@@ -15,7 +15,6 @@ export default defineNuxtConfig({
     "shadcn-nuxt",
     "@pinia/nuxt",
     "@nuxtjs/supabase",
-    "motion-v/nuxt",
     "@nuxtjs/color-mode",
   ],
   colorMode: {

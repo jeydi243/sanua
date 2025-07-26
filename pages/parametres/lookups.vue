@@ -69,11 +69,24 @@
         </TableHeader>
         <TableBody>
           <template v-if="table.getRowModel().rows?.length">
-            <template v-for="row in table.getRowModel().rows" :key="row.id">
+            <TransitionGroup
+              name="list"
+              tag="tbody"
+              appear
+              :css="false"
+              @before-enter="onBeforeEnter"
+              @enter="onEnter"
+              @leave="onLeave"
+            >
               <TableRow
+                v-for="(row, index) in table.getRowModel().rows"
+                :key="row.id"
                 :data-state="row.getIsSelected() && 'selected'"
                 class="cursor-pointer"
                 @click="handleRowClick(row)"
+                v-motion
+                :initial="{ opacity: 0, y: 100 }"
+                :enter="{ opacity: 1, y: 0, transition: { delay: index * 100 } }"
               >
                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                   <FlexRender
@@ -82,12 +95,7 @@
                   />
                 </TableCell>
               </TableRow>
-              <TableRow v-if="row.getIsExpanded()">
-                <TableCell :colspan="row.getAllCells().length">
-                  {{ JSON.stringify(row.original) }}
-                </TableCell>
-              </TableRow>
-            </template>
+            </TransitionGroup>
           </template>
 
           <TableRow v-else>

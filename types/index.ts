@@ -72,7 +72,7 @@ export interface ClientState {
   clientChannel: RealtimeChannel | null;
 }
 // Interface pour un prêt. Remplacez les champs par ceux de votre table 'pret'.
-interface Pret {
+export interface Pret {
   id?: number;
   montant?: number;
   duree?: number; // en mois
@@ -83,7 +83,7 @@ interface Pret {
 }
 
 // Interface pour un échéancier de prêt. Remplacez les champs par ceux de votre table 'echeancierPret'.
-interface EcheancierPret {
+export interface EcheancierPret {
   id?: number;
   pret_id?: number;
   date_echeance?: string;
@@ -95,7 +95,7 @@ interface EcheancierPret {
 }
 
 // Interface pour l'état du store
-interface PretState {
+export interface PretState {
   prets: Pret[];
   echeanciers: EcheancierPret[];
   loading: boolean;
@@ -103,15 +103,15 @@ interface PretState {
 }
 
 // Interface pour la table Lookup
-interface Lookup {
+export interface Lookup {
   id?: number;
-  type: string; // Ex: 'TYPE_PRET', 'STATUT_CLIENT'
+  classe_id: string; // Ex: 'TYPE_PRET', 'STATUT_CLIENT'
   code: string; // Ex: 'PERSO', 'ENTREP'
-  valeur: string; // Ex: 'Prêt personnel', 'Prêt entreprise'
+  nom: string; // Ex: 'Prêt personnel', 'Prêt entreprise'
   description?: string;
 }
 
-interface AdminState {
+export interface AdminState {
   currentUser: User | null;
   users: User[];
   lookups: Lookup[]; // Ajout de l'état pour les lookups
@@ -120,8 +120,8 @@ interface AdminState {
   isAuthenticated: boolean;
   errorMessage: string;
 }
-interface UserState {
-  user: any | null; // Remplacez 'any' par le type d'utilisateur Supabase si vous l'avez défini
+export interface UserState {
+  user: User | null; // Remplacez 'any' par le type d'utilisateur Supabase si vous l'avez défini
   loading: boolean;
   error: string | null;
 }

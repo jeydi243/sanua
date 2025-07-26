@@ -22,7 +22,6 @@
               <TableRow
                 :data-state="row.getIsSelected() && 'selected'"
                 class="cursor-pointer"
-                @click="handleRowClick(row)"
               >
                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                   <FlexRender
@@ -41,7 +40,7 @@
 
           <TableRow v-else>
             <TableCell :colspan="columns.length" class="h-24 text-center">
-              Aucune classe !
+              Aucun lookup !
             </TableCell>
           </TableRow>
         </TableBody>
@@ -67,6 +66,9 @@ import type {
   VisibilityState,
 } from "@tanstack/vue-table";
 import { Checkbox } from "../ui/checkbox";
+import { Button } from "../ui/button";
+import { ArrowUpDown } from "lucide-vue-next";
+import type { Lookup } from "~/types";
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
@@ -96,20 +98,7 @@ const columns: ColumnDef<Lookup>[] = [
   {
     accessorKey: "code",
     header: "Code",
-    cell: ({ row }) =>
-      h(
-        Avatar,
-        { class: "h-8 w-8 rounded-lg" },
-        {
-          default: () => [
-            h(AvatarImage, {
-              src: row.getValue("avatar_url"),
-              alt: row.getValue("username"),
-            }),
-            h(AvatarFallback, { class: "rounded-lg" }, "CN"),
-          ],
-        }
-      ),
+    cell: ({ row }) => row.getValue("code"),
   },
   {
     accessorKey: "nom",
@@ -157,22 +146,19 @@ const columns: ColumnDef<Lookup>[] = [
     enableHiding: false,
     header: () => h("div", { class: "text-center" }, "Actions"),
     cell: ({ row }) => {
-      const payment = row.original;
-
-      return h(
-        "div",
-        { class: "relative text-center" },
-        h(DropdownAction, {
-          payment,
-          onExpand: row.toggleExpanded,
-        })
-      );
+      return h("div", { class: "relative text-center" }, row.getValue("lookup_id"));
     },
   },
 ];
+const props = defineProps({
+  classeId: {
+    type: String,
+    required: true,
+  },
+});
 const { getLookupsByClasseId } = useAdminStore();
 const table = useVueTable({
-  data: getLookupsByClasseId(),
+  data: getLookupsByClasseId(props.classeId),
   columns,
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
