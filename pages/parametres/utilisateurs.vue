@@ -145,19 +145,7 @@ import DropdownAction from '@/components/users/dropdownAction.vue'
 import type { User } from '@supabase/supabase-js'
 import CreateUserForm from '~/components/users/createUserForm.vue'
 
-export interface Payment {
-    id: string
-    amount: number
-    status: 'pending' | 'processing' | 'success' | 'failed'
-    email: string
-}
-export interface responseUsers {
-    users: User[];
-    total: number;
-    page: number;
-    perPage: number;
-    totalPages: number;
-}
+
 // const { data: users, status, error, refresh, pending } = await useAsyncData<responseUsers>(
 //     'utilisateurs',
 //     () => $fetch('/api/admin/users/lists'),

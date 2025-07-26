@@ -170,12 +170,6 @@ import {
 import CreateRoleForm from "~/components/roles/createRoleForm.vue";
 import DropdownActionRole from "~/components/roles/dropdownActionRole.vue";
 
-export interface Role {
-  id: string;
-  code: number;
-  name: string;
-  description: string;
-}
 
 onMounted(async () => {
   await fetchRoles();

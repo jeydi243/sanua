@@ -1,24 +1,7 @@
 import type { User } from '@supabase/supabase-js'
 import { defineStore } from 'pinia'
 
-// Interface pour la table Lookup
-interface Lookup {
-  id?: number;
-  type: string; // Ex: 'TYPE_PRET', 'STATUT_CLIENT'
-  code: string; // Ex: 'PERSO', 'ENTREP'
-  valeur: string; // Ex: 'Prêt personnel', 'Prêt entreprise'
-  description?: string;
-}
 
-interface AdminState {
-    currentUser: User | null
-    users: User[]
-    lookups: Lookup[] // Ajout de l'état pour les lookups
-    isLoading: boolean
-    error: string | null
-    isAuthenticated: boolean
-    errorMessage: string
-}
 
 export const useAdminStore = defineStore('admin', {
     state: (): AdminState => ({

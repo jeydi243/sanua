@@ -138,22 +138,6 @@ import {
 import DropdownAction from '@/components/users/dropdownAction.vue'
 import type { User } from '@supabase/supabase-js'
 
-export interface responseUsers {
-    users: User[];
-    total: number;
-    page: number;
-    perPage: number;
-    totalPages: number;
-}
-
-export interface Organisation {
-    id: User[];
-    lookup_id: number;
-    nom: number;
-    description: number;
-    created_at: string;
-}
-
 
 onMounted(async () => {
     await fetchOrganisations()

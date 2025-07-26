@@ -1,36 +1,6 @@
 import { defineStore } from 'pinia';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-// Interface pour un prêt. Remplacez les champs par ceux de votre table 'pret'.
-interface Pret {
-  id?: number;
-  montant?: number;
-  duree?: number; // en mois
-  taux_interet_annuel?: number;
-  date_debut?: string;
-  client_id?: string;
-  // Ajoutez d'autres champs ici
-}
-
-// Interface pour un échéancier de prêt. Remplacez les champs par ceux de votre table 'echeancierPret'.
-interface EcheancierPret {
-  id?: number;
-  pret_id?: number;
-  date_echeance?: string;
-  montant_echeance?: number;
-  principal_rembourse?: number;
-  interet_paye?: number;
-  capital_restant_du?: number;
-  // Ajoutez d'autres champs ici
-}
-
-// Interface pour l'état du store
-interface PretState {
-  prets: Pret[];
-  echeanciers: EcheancierPret[];
-  loading: boolean;
-  error: string | null;
-}
 
 export const usePretStore = defineStore('pret', {
   state: (): PretState => ({

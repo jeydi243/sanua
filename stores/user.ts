@@ -1,10 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { defineStore } from 'pinia'
-interface UserState {
-    user: any | null; // Remplacez 'any' par le type d'utilisateur Supabase si vous l'avez défini
-    loading: boolean;
-    error: string | null;
-}
+
 
 export const useUserStore = defineStore('user', {
     state: (): UserState => ({

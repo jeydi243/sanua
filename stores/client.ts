@@ -1,33 +1,7 @@
 import { defineStore } from 'pinia';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import type { ClientState } from '~/types';
 
-// Interface pour un client. Adaptez les champs à votre table 'client'.
-interface Client {
-  id?: string; // UUID
-  nom: string;
-  prenom: string;
-  date_naissance?: string;
-  // Ajoutez d'autres champs ici
-}
-
-// Interface pour un compte. Adaptez les champs à votre table 'compte'.
-interface Compte {
-  id?: number;
-  client_id: string; // Clé étrangère vers la table client
-  numero_compte: string;
-  solde: number;
-  type_compte: string;
-  // Ajoutez d'autres champs ici
-}
-
-// Interface pour l'état du store
-interface ClientState {
-  clients: Client[];
-  comptes: Compte[];
-  loading: boolean;
-  error: string | null;
-  clientChannel: RealtimeChannel | null;
-}
 
 export const useClientStore = defineStore('client', {
   state: (): ClientState => ({

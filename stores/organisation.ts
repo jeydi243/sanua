@@ -1,21 +1,10 @@
 import { defineStore } from 'pinia';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Organisation, OrganisationState } from '~/types';
 
-// Interface pour une organisation. Adaptez les champs à votre table.
-interface Organisation {
-  id?: number;
-  nom: string;
-  adresse?: string;
-  telephone?: string;
-  // Ajoutez d'autres champs pertinents ici
-}
 
-// Interface pour l'état du store
-interface OrganisationState {
-  organisations: Organisation[];
-  loading: boolean;
-  error: string | null;
-}
+
+
 
 export const useOrganisationStore = defineStore('organisation', {
   state: (): OrganisationState => ({
