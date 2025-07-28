@@ -113,7 +113,7 @@ const onSubmit = handleSubmit(async (values) => {
                                     </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent class="w-auto p-0">
-                                    <Calendar :model-value="value" :initial-focus="true" @update:model-value="(val) => setFieldValue('date_octroi', val)" />
+                                    <Calendar :model-value="value" :initial-focus="true" @update:model-value="(val) => setFieldValue('date_octroi', val?.toDate())" />
                                 </PopoverContent>
                             </Popover>
                             <FormMessage :message="errorMessage" />

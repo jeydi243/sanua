@@ -1,8 +1,8 @@
 import { defineNuxtModule } from 'nuxt/kit'
 
 export default defineNuxtModule({
-  meta: {
-    name: 'icon'
-  },
-  setup () {}
+    meta: {
+        name: 'icon',
+    },
+    setup() {},
 })

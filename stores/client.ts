@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js'
-import type { ClientState } from '~/types'
+import type { ClientState, Compte } from '~/types'
 
 export const useClientStore = defineStore('client', {
     state: (): ClientState => ({
@@ -20,7 +20,7 @@ export const useClientStore = defineStore('client', {
             this.loading = true
             this.error = null
             try {
-                const supabase = useSupabaseClient()
+                const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('client')
                     .insert([client])
@@ -84,7 +84,7 @@ export const useClientStore = defineStore('client', {
             this.loading = true
             this.error = null
             try {
-                const supabase = useSupabaseClient()
+                const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('client')
                     .update(client)
@@ -128,7 +128,7 @@ export const useClientStore = defineStore('client', {
         setupClientChangesListener() {
             if (this.clientChannel) return // Évite de créer plusieurs écouteurs
 
-            const supabase = useSupabaseClient()
+            const supabase: SupabaseClient = useSupabaseClient()
             this.clientChannel = supabase
                 .channel('public:client')
                 .on(
@@ -190,7 +190,7 @@ export const useClientStore = defineStore('client', {
             this.loading = true
             this.error = null
             try {
-                const supabase = useSupabaseClient()
+                const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('compte')
                     .insert([compte])
@@ -237,7 +237,7 @@ export const useClientStore = defineStore('client', {
             this.loading = true
             this.error = null
             try {
-                const supabase = useSupabaseClient()
+                const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('compte')
                     .update(compte)

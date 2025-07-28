@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { AdminState, Lookup } from '../types'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const useAdminStore = defineStore('admin', {
     state: (): AdminState => ({
@@ -45,7 +46,7 @@ export const useAdminStore = defineStore('admin', {
             this.isLoading = true
             this.errorMessage = ''
             try {
-                const supabase = useSupabaseClient()
+                const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('lookup')
                     .insert([lookup])
@@ -95,7 +96,7 @@ export const useAdminStore = defineStore('admin', {
             this.isLoading = true
             this.errorMessage = ''
             try {
-                const supabase = useSupabaseClient()
+                const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('lookup')
                     .update(lookup)
