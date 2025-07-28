@@ -11,7 +11,6 @@ export const useAdminStore = defineStore("admin", {
   }),
 
   getters: {
-
     // Get all users
     getAllUsers: (state: AdminState) => state.users,
 
@@ -36,7 +35,7 @@ export const useAdminStore = defineStore("admin", {
     //init method to fetch lookups and classes
     async init() {
       await this.fetchLookups();
-      // await this.fetchClasses();
+      await this.fetchUsers();
     },
     /**
      * Crée une nouvelle entrée dans la table lookup.
@@ -75,7 +74,8 @@ export const useAdminStore = defineStore("admin", {
         const supabase = useSupabaseClient();
         const { data, error } = await supabase.from("lookup").select("*");
         if (error) throw new Error(error.message);
-        this.lookups = data || [];
+        this.lookups = data;
+        console.log(this.lookups);
         return { data, error: null, loading: false };
       } catch (err: any) {
         this.errorMessage = `Error fetching lookups: ${err.message}`;

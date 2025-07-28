@@ -105,6 +105,7 @@ export interface PretState {
 // Interface pour la table Lookup
 export interface Lookup {
   id?: number;
+  lookup_id?: string;
   classe_id: string; // Ex: 'TYPE_PRET', 'STATUT_CLIENT'
   code: string; // Ex: 'PERSO', 'ENTREP'
   nom: string; // Ex: 'Prêt personnel', 'Prêt entreprise'

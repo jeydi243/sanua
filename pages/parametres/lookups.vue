@@ -4,9 +4,8 @@
     <span class="text-md">List de toutes les classes dans l'application </span>
     <div class="flex gap-2 items-center py-4">
       <Input class="max-w-52" placeholder="Rechercher"
-        :model-value="table.getColumn('email')?.getFilterValue() as string" @update:model-value="
-          table.getColumn('email')?.setFilterValue($event)
-          " />
+        :model-value="table.getColumn('code')?.getFilterValue() as string" @update:model-value="
+          table.getColumn('code')?.setFilterValue($event)" />
 
       <Button @click="fetchClasses">
         <Icon v-if="classeIsFetching" name="line-md:loading-twotone-loop" style="color: white" />
@@ -94,7 +93,7 @@
 
 <script setup lang="ts">
 import { Toaster } from "@/components/ui/sonner";
-
+import CreateClasseForm from "@/components/classes/CreateClasseForm.vue";
 import ClasseDrawer from "@/components/classes/ClasseDrawer.vue";
 import type {
   ColumnDef,

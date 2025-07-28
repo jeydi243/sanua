@@ -159,7 +159,6 @@ const data = {
   <Sidebar v-bind="props">
     <SidebarHeader>
       <TeamSwitcher :teams="data.teams" />
-      <Button variant="outline">New</Button>
     </SidebarHeader>
     <SidebarContent>
       <NavMain :items="data.navMain" />

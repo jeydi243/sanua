@@ -117,18 +117,6 @@ const columns: ColumnDef<Lookup>[] = [
     cell: ({ row }) =>
       h("div", { class: "lowercase" }, row.getValue("description")),
   },
-
-  {
-    accessorKey: "lookup_id",
-    header: () => h("div", { class: "text-right" }, "Type d'classe"),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "text-right font-medium" },
-        row.getValue("lookup_id")
-      );
-    },
-  },
   {
     id: "actions",
     enableHiding: false,
@@ -148,6 +136,7 @@ const props = defineProps({
     required: true,
   },
 });
+
 const { getLookupsByClasseId } = useAdminStore();
 const table = useVueTable({
   data: getLookupsByClasseId(props.classeId),

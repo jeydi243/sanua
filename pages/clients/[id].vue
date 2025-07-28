@@ -12,10 +12,7 @@
         </template>
         <template v-else-if="client">
           <Avatar class="h-16 w-16">
-            <AvatarImage
-              :src="client.avatar_url"
-              :alt="`${client.prenom} ${client.nom}`"
-            />
+            <AvatarImage :src="client.avatar_url" :alt="`${client.prenom} ${client.nom}`" />
             <AvatarFallback>{{ getAvatarFallback(client) }}</AvatarFallback>
           </Avatar>
           <div>
@@ -30,16 +27,17 @@
       </div>
       <div class="flex gap-2">
         <Button variant="outline">Modifier</Button>
-        <Button>Nouvelle Opération</Button>
+        <Button @click="isPretSheetOpen = true">
+          <PlusIcon class="w-4 h-4 mr-2" />
+          Nouvelle Opération
+        </Button>
       </div>
     </div>
 
     <!-- Indicateurs Clés (KPIs) -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Solde Total</CardTitle>
           <span class="text-muted-foreground">XOF</span>
         </CardHeader>
@@ -62,9 +60,7 @@
         </CardContent>
       </Card>
       <Card>
-        <CardHeader
-          class="flex flex-row items-center justify-between space-y-0 pb-2"
-        >
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle class="text-sm font-medium">Encours de Crédit</CardTitle>
           <span class="text-muted-foreground">XOF</span>
         </CardHeader>
@@ -102,9 +98,7 @@
         <Card>
           <CardHeader>
             <CardTitle>Comptes du Client</CardTitle>
-            <CardDescription
-              >Liste des comptes d'épargne et courants.</CardDescription
-            >
+            <CardDescription>Liste des comptes d'épargne et courants.</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -119,21 +113,29 @@
               <TableBody>
                 <template v-if="isLoading">
                   <TableRow v-for="i in 3" :key="i">
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
                   </TableRow>
                 </template>
                 <template v-else-if="comptes.length > 0">
                   <TableRow v-for="compte in comptes" :key="compte.id">
                     <TableCell class="font-medium">{{
                       compte.numero_compte
-                    }}</TableCell>
+                      }}</TableCell>
                     <TableCell>{{ compte.type_compte }}</TableCell>
                     <TableCell class="text-right">{{
                       formatCurrency(compte.solde)
-                    }}</TableCell>
+                      }}</TableCell>
                     <TableCell class="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger as-child>
@@ -143,9 +145,7 @@
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            >Voir les transactions</DropdownMenuItem
-                          >
+                          <DropdownMenuItem>Voir les transactions</DropdownMenuItem>
                           <DropdownMenuItem>Faire un dépôt</DropdownMenuItem>
                           <DropdownMenuItem>Faire un retrait</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -155,9 +155,7 @@
                 </template>
                 <template v-else>
                   <TableRow>
-                    <TableEmpty :colspan="4"
-                      >Aucun compte trouvé pour ce client.</TableEmpty
-                    >
+                    <TableEmpty :colspan="4">Aucun compte trouvé pour ce client.</TableEmpty>
                   </TableRow>
                 </template>
               </TableBody>
@@ -171,9 +169,7 @@
         <Card>
           <CardHeader>
             <CardTitle>Prêts du Client</CardTitle>
-            <CardDescription
-              >Liste des prêts accordés au client.</CardDescription
-            >
+            <CardDescription>Liste des prêts accordés au client.</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -188,17 +184,25 @@
               <TableBody>
                 <template v-if="isLoading">
                   <TableRow v-for="i in 2" :key="i">
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
-                    <TableCell><Skeleton class="h-5 w-full" /></TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton class="h-5 w-full" />
+                    </TableCell>
                   </TableRow>
                 </template>
                 <template v-else-if="prets.length > 0">
                   <TableRow v-for="pret in prets" :key="pret.id">
                     <TableCell class="font-medium">{{
                       formatCurrency(pret.montant)
-                    }}</TableCell>
+                      }}</TableCell>
                     <TableCell>{{ pret.taux_interet_annuel }}%</TableCell>
                     <TableCell>{{ formatDate(pret.date_debut) }}</TableCell>
                     <TableCell class="text-right">
@@ -211,9 +215,7 @@
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem>Voir l'échéancier</DropdownMenuItem>
-                          <DropdownMenuItem
-                            >Enregistrer un remboursement</DropdownMenuItem
-                          >
+                          <DropdownMenuItem>Enregistrer un remboursement</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -221,9 +223,7 @@
                 </template>
                 <template v-else>
                   <TableRow>
-                    <TableEmpty :colspan="4"
-                      >Aucun prêt trouvé pour ce client.</TableEmpty
-                    >
+                    <TableEmpty :colspan="4">Aucun prêt trouvé pour ce client.</TableEmpty>
                   </TableRow>
                 </template>
               </TableBody>
@@ -232,13 +232,14 @@
         </Card>
       </TabsContent>
     </Tabs>
+    
+    <CreatePretSheet v-if="clientId" v-model:open="isPretSheetOpen" :client-id="clientId" />
   </div>
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useClientStore } from "@/stores/client";
 import { usePretStore } from "@/stores/pret";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -265,7 +266,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-vue-next";
+import { MoreHorizontal, PlusIcon } from "lucide-vue-next";
+import CreatePretSheet from '~/components/prets/CreatePretSheet.vue';
 
 // Définition des types pour plus de clarté
 type Client = ReturnType<typeof useClientStore>["clients"][0];
@@ -275,11 +277,15 @@ type Pret = ReturnType<typeof usePretStore>["prets"][0];
 const route = useRoute();
 const clientStore = useClientStore();
 const pretStore = usePretStore();
-
 const client = ref<Client | null>(null);
 const comptes = ref<Compte[]>([]);
 const prets = ref<Pret[]>([]);
 const isLoading = ref(true);
+const isPretSheetOpen = ref(false);
+
+useHead({
+  title: "DétailsClient",
+});
 
 const clientId = Array.isArray(route.params.id)
   ? route.params.id[0]

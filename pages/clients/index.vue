@@ -1,43 +1,30 @@
 <template>
   <div class="w-full p-4 md:p-8">
     <h1 class="font-bold text-4xl mb-2">Clients</h1>
-    <span class="text-md text-muted-foreground"
-      >Liste de tous les clients de l'application.</span
-    >
+    <span class="text-md text-muted-foreground">Liste de tous les clients de l'application.</span>
 
     <div class="flex items-center gap-2 py-4">
-      <Input
-        class="max-w-sm"
-        placeholder="Filtrer par nom..."
+      <Input class="max-w-sm" placeholder="Filtrer par nom..."
         :model-value="table.getColumn('nom')?.getFilterValue() as string ?? ''"
-        @update:model-value="table.getColumn('nom')?.setFilterValue($event)"
-      />
+        @update:model-value="table.getColumn('nom')?.setFilterValue($event)" />
 
       <Button :disabled="isLoading" @click="clientStore.fetchClients()">
-        <Icon
-          v-if="isLoading"
-          name="line-md:loading-twotone-loop"
-          class="text-white"
-        />
+        <Icon v-if="isLoading" name="line-md:loading-twotone-loop" class="text-white" />
         <span v-else>Rafraîchir</span>
       </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Button variant="outline" class="ml-auto">
-            Colonnes <ChevronDown class="ml-2 h-4 w-4" />
+            Colonnes
+            <ChevronDown class="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuCheckboxItem
-            v-for="column in table
-              .getAllColumns()
-              .filter((c: any) => c.getCanHide())"
-            :key="column.id"
-            class="capitalize"
-            :checked="column.getIsVisible()"
-            @update:checked="(value: any) => column.toggleVisibility(!!value)"
-          >
+          <DropdownMenuCheckboxItem v-for="column in table
+            .getAllColumns()
+            .filter((c: any) => c.getCanHide())" :key="column.id" class="capitalize" :checked="column.getIsVisible()"
+            @update:checked="(value: any) => column.toggleVisibility(!!value)">
             {{ column.id }}
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
@@ -49,31 +36,19 @@
     <div class="rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow
-            v-for="headerGroup in table.getHeaderGroups()"
-            :key="headerGroup.id"
-          >
+          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
-              <FlexRender
-                v-if="!header.isPlaceholder"
-                :render="header.column.columnDef.header"
-                :props="header.getContext()"
-              />
+              <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header"
+                :props="header.getContext()" />
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <template v-if="table.getRowModel().rows?.length">
-            <TableRow
-              v-for="row in table.getRowModel().rows"
-              :key="row.id"
-              :data-state="row.getIsSelected() && 'selected'"
-            >
+            <TableRow v-for="row in table.getRowModel().rows" :key="row.id"
+              :data-state="row.getIsSelected() && 'selected'">
               <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                <FlexRender
-                  :render="cell.column.columnDef.cell"
-                  :props="cell.getContext()"
-                />
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </TableCell>
             </TableRow>
           </template>
@@ -93,20 +68,10 @@
         {{ table.getFilteredRowModel().rows.length }} ligne(s) sélectionnée(s).
       </div>
       <div class="space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="!table.getCanPreviousPage()"
-          @click="table.previousPage()"
-        >
+        <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
           Précédent
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="!table.getCanNextPage()"
-          @click="table.nextPage()"
-        >
+        <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
           Suivant
         </Button>
       </div>
@@ -264,25 +229,25 @@ const table = useVueTable({
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   onSortingChange: (updaterOrValue) =>
-    (sorting.value =
-      typeof updaterOrValue === "function"
-        ? updaterOrValue(sorting.value)
-        : updaterOrValue),
+  (sorting.value =
+    typeof updaterOrValue === "function"
+      ? updaterOrValue(sorting.value)
+      : updaterOrValue),
   onColumnFiltersChange: (updaterOrValue) =>
-    (columnFilters.value =
-      typeof updaterOrValue === "function"
-        ? updaterOrValue(columnFilters.value)
-        : updaterOrValue),
+  (columnFilters.value =
+    typeof updaterOrValue === "function"
+      ? updaterOrValue(columnFilters.value)
+      : updaterOrValue),
   onColumnVisibilityChange: (updaterOrValue) =>
-    (columnVisibility.value =
-      typeof updaterOrValue === "function"
-        ? updaterOrValue(columnVisibility.value)
-        : updaterOrValue),
+  (columnVisibility.value =
+    typeof updaterOrValue === "function"
+      ? updaterOrValue(columnVisibility.value)
+      : updaterOrValue),
   onRowSelectionChange: (updaterOrValue) =>
-    (rowSelection.value =
-      typeof updaterOrValue === "function"
-        ? updaterOrValue(rowSelection.value)
-        : updaterOrValue),
+  (rowSelection.value =
+    typeof updaterOrValue === "function"
+      ? updaterOrValue(rowSelection.value)
+      : updaterOrValue),
   state: {
     get sorting() {
       return sorting.value;
