@@ -20,7 +20,7 @@ export const useAdminStore = defineStore('admin', {
 
         // Get lookups by type
         getLookupsByClasseId: (state: AdminState) => (id: string) =>
-            state.lookups.filter((lookup) => lookup.classe_id === id),
+            state.lookups.filter((lookup) => lookup.classe_id == id),
 
         // Get loading state
         getLoadingState: (state: AdminState) => state.isLoading,

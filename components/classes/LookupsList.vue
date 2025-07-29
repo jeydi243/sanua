@@ -42,11 +42,12 @@ import { Button } from '../ui/button'
 import { ArrowUpDown } from 'lucide-vue-next'
 import type { Lookup } from '~/types'
 const sorting = ref<SortingState>([])
+const lookups = shallowRef<Lookup[]>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
-const columns: ColumnDef<Lookup>[] = [
+const lookupColumns: ColumnDef<Lookup>[] = [
     {
         id: 'select',
         header: ({ table }) =>
@@ -112,11 +113,19 @@ const props = defineProps({
         required: true,
     },
 })
+const { getLookupsByClasseId, getAllLookups } = useAdminStore()
 
-const { getLookupsByClasseId } = useAdminStore()
+onMounted(() => {
+    console.log(props.classeId)
+    // lookups.value = getLookupsByClasseId(props.classeId)
+    lookups.value = getAllLookups
+    //custom message
+    console.log('lookups', lookups.value)
+})
+
 const table = useVueTable({
-    data: getLookupsByClasseId(props.classeId),
-    columns,
+    data: lookups.value,
+    lookupColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
