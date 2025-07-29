@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js'
-import type { ClientState, Compte } from '~/types'
+import type { ClientState, Compte, Adresse } from '~/types'
 
 export const useClientStore = defineStore('client', {
     state: (): ClientState => ({
         clients: [],
         comptes: [],
+        adresses: [],
         loading: false,
         error: null,
         clientChannel: null,
@@ -271,6 +272,105 @@ export const useClientStore = defineStore('client', {
                     .eq('id', id)
                 if (error) throw error
                 this.comptes = this.comptes.filter((c) => c.id !== id)
+                return { data: { success: true }, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        // =================================================================
+        // Actions CRUD pour la table 'adresse'
+        // =================================================================
+
+        async createAdresse(adresse: Omit<Adresse, 'id'>) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase: SupabaseClient = useSupabaseClient()
+                const { data, error } = await supabase
+                    .from('adresse')
+                    .insert([adresse])
+                    .select()
+                    .single()
+                if (error) throw error
+                if (data) {
+                    this.adresses.push(data)
+                }
+                return { data, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async fetchAdressesForClient(clientId: string) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase = useSupabaseClient()
+                const { data, error } = await supabase
+                    .from('adresse')
+                    .select('*')
+                    .eq('client_id', clientId)
+                if (error) throw error
+                this.adresses = [
+                    ...this.adresses.filter(
+                        (a) => a.client_id !== clientId,
+                    ),
+                    ...(data || []),
+                ]
+                return { data, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateAdresse(adresse: Adresse) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase: SupabaseClient = useSupabaseClient()
+                const { data, error } = await supabase
+                    .from('adresse')
+                    .update(adresse)
+                    .eq('id', adresse.id)
+                    .select()
+                    .single()
+                if (error) throw error
+                if (data) {
+                    const index = this.adresses.findIndex(
+                        (a) => a.id === adresse.id,
+                    )
+                    if (index !== -1) this.adresses[index] = data
+                }
+                return { data, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async deleteAdresse(id: number) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase = useSupabaseClient()
+                const { error } = await supabase
+                    .from('adresse')
+                    .delete()
+                    .eq('id', id)
+                if (error) throw error
+                this.adresses = this.adresses.filter((a) => a.id !== id)
                 return { data: { success: true }, error: null, loading: false }
             } catch (err: any) {
                 this.error = err.message

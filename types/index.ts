@@ -45,13 +45,7 @@ export interface Payment {
 }
 
 // Interface pour un client. Adaptez les champs à votre table 'client'.
-export interface Client {
-    id?: string // UUID
-    nom: string
-    prenom: string
-    date_naissance?: string
-    // Ajoutez d'autres champs ici
-}
+
 
 // Interface pour un compte. Adaptez les champs à votre table 'compte'.
 export interface Compte {
@@ -63,10 +57,22 @@ export interface Compte {
     // Ajoutez d'autres champs ici
 }
 
+// Interface pour une adresse.
+export interface Adresse {
+    id?: number
+    client_id: string
+    rue: string
+    ville: string
+    code_postal: string
+    pays: string
+    is_primary: boolean
+}
+
 // Interface pour l'état du store
 export interface ClientState {
     clients: Client[]
     comptes: Compte[]
+    adresses: Adresse[]
     loading: boolean
     error: string | null
     clientChannel: RealtimeChannel | null
@@ -94,10 +100,20 @@ export interface EcheancierPret {
     // Ajoutez d'autres champs ici
 }
 
+// Interface pour un garant.
+export interface Garant {
+    id?: number
+    pret_id: string
+    nom: string
+    relation: string
+    contact: string
+}
+
 // Interface pour l'état du store
 export interface PretState {
     prets: Pret[]
     echeanciers: EcheancierPret[]
+    garants: Garant[]
     loading: boolean
     error: string | null
 }
@@ -106,7 +122,7 @@ export interface PretState {
 export interface Lookup {
     id?: number
     lookup_id?: string
-    classe_id: string // Ex: 'TYPE_PRET', 'STATUT_CLIENT'
+    classe_id: string 
     code: string // Ex: 'PERSO', 'ENTREP'
     nom: string // Ex: 'Prêt personnel', 'Prêt entreprise'
     description?: string

@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { EcheancierPret, Pret, PretState } from '~/types'
+import type { EcheancierPret, Pret, PretState, Garant } from '~/types'
 
 export const usePretStore = defineStore('pret', {
     state: (): PretState => ({
         prets: [],
         echeanciers: [],
+        garants: [],
         loading: false,
         error: null,
     }),
@@ -336,6 +337,103 @@ export const usePretStore = defineStore('pret', {
                     .eq('id', id)
                 if (error) throw error
                 this.echeanciers = this.echeanciers.filter((e) => e.id !== id)
+                return { data: { success: true }, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        // =================================================================
+        // Actions CRUD pour la table 'garant'
+        // =================================================================
+
+        async createGarant(garant: Omit<Garant, 'id'>) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase: SupabaseClient = useSupabaseClient()
+                const { data, error } = await supabase
+                    .from('garant')
+                    .insert([garant])
+                    .select()
+                    .single()
+                if (error) throw error
+                if (data) {
+                    this.garants.push(data)
+                }
+                return { data, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async fetchGarantsForPret(pretId: string) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase = useSupabaseClient()
+                const { data, error } = await supabase
+                    .from('garant')
+                    .select('*')
+                    .eq('pret_id', pretId)
+                if (error) throw error
+                this.garants = [
+                    ...this.garants.filter((g) => g.pret_id !== pretId),
+                    ...(data || []),
+                ]
+                return { data, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateGarant(garant: Garant) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase: SupabaseClient = useSupabaseClient()
+                const { data, error } = await supabase
+                    .from('garant')
+                    .update(garant)
+                    .eq('id', garant.id)
+                    .select()
+                    .single()
+                if (error) throw error
+                if (data) {
+                    const index = this.garants.findIndex(
+                        (g) => g.id === garant.id,
+                    )
+                    if (index !== -1) this.garants[index] = data
+                }
+                return { data, error: null, loading: false }
+            } catch (err: any) {
+                this.error = err.message
+                return { data: null, error: err.message, loading: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async deleteGarant(id: number) {
+            this.loading = true
+            this.error = null
+            try {
+                const supabase = useSupabaseClient()
+                const { error } = await supabase
+                    .from('garant')
+                    .delete()
+                    .eq('id', id)
+                if (error) throw error
+                this.garants = this.garants.filter((g) => g.id !== id)
                 return { data: { success: true }, error: null, loading: false }
             } catch (err: any) {
                 this.error = err.message
