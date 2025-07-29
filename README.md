@@ -79,6 +79,3 @@ A brief overview of the key directories in this project:
 -   `├── /stores` - Contains Pinia store modules for state management.
 -   `├── /types` - Contains TypeScript type definitions.
 -   `└── nuxt.config.ts` - The main configuration file for Nuxt.
-
----
-*This README was improved by the Gemini CLI.*
