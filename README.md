@@ -23,6 +23,22 @@ Sanua is a web application for microfinance management, built with Nuxt.js and S
   </a>
 </p>
 
+## ✨ Key Features
+
+-   **Authentication**: Secure user login and session management.
+-   **Client Management**: Create and manage client profiles.
+-   **Cashier Operations**: Handle deposits, withdrawals, and view transaction history.
+-   **Loan Management**: Basic loan creation and tracking.
+-   **System Settings**: Configure organizations, user roles, and application lookups.
+
+## 🎯 Future Features
+
+-   [ ] **Dashboard & Reporting**: Visual dashboards for key metrics and generating reports.
+-   [ ] **Loan Repayment Tracking**: Detailed schedules and tracking for loan repayments.
+-   [ ] **Group Management**: Ability to create and manage client groups for group lending.
+-   [ ] **Automated Notifications**: Email or SMS notifications for clients and staff.
+-   [ ] **Audit Trail**: Comprehensive logging of all system activities.
+
 ## 🛠️ Tech Stack
 
 - **Framework**: [Nuxt.js](https://nuxt.com/)
