@@ -2,7 +2,28 @@
 
 Sanua is a web application for microfinance management, built with Nuxt.js and Supabase.
 
-## Tech Stack
+<p align="center">
+  <a href="https://nuxt.com/" target="_blank">
+    <img src="https://img.shields.io/badge/Nuxt.js-00DC82?style=for-the-badge&logo=nuxt.js&logoColor=white" alt="Nuxt.js">
+  </a>
+  <a href="https://vuejs.org/" target="_blank">
+    <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="Vue.js">
+  </a>
+  <a href="https://tailwindcss.com/" target="_blank">
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  </a>
+  <a href="https://supabase.io/" target="_blank">
+    <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase">
+  </a>
+   <a href="https://pinia.vuejs.org/" target="_blank">
+    <img src="https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logo=vuedotjs&logoColor=black" alt="Pinia">
+  </a>
+  <a href="https://bun.sh/" target="_blank">
+    <img src="https://img.shields.io/badge/Bun-FBF0DF?style=for-the-badge&logo=bun&logoColor=black" alt="Bun">
+  </a>
+</p>
+
+## 🛠️ Tech Stack
 
 - **Framework**: [Nuxt.js](https://nuxt.com/)
 - **UI Framework**: [Vue.js](https://vuejs.org/)
@@ -12,11 +33,11 @@ Sanua is a web application for microfinance management, built with Nuxt.js and S
 - **Form Validation**: [VeeValidate](https://vee-validate.logaretm.com/) & [Zod](https://zod.dev/)
 - **Package Manager**: [Bun](https://bun.sh/)
 
-## Prerequisites
+## 📋 Prerequisites
 
 Before you begin, ensure you have [Bun](https://bun.sh/docs/installation) installed on your system.
 
-## Project Setup
+## 🚀 Project Setup
 
 1.  **Clone the repository:**
     ```bash
@@ -41,7 +62,7 @@ Before you begin, ensure you have [Bun](https://bun.sh/docs/installation) instal
     SUPABASE_KEY="your-supabase-anon-key"
     ```
 
-## Development
+## 💻 Development
 
 To start the development server, run the following command. The application will be available at `http://localhost:3000`.
 
@@ -49,7 +70,7 @@ To start the development server, run the following command. The application will
 bun run dev
 ```
 
-## Production
+## 📦 Production
 
 To build the application for production, use:
 
@@ -63,7 +84,7 @@ To preview the production build locally, run:
 bun run preview
 ```
 
-## Folder Structure
+## 📁 Folder Structure
 
 A brief overview of the key directories in this project:
 
