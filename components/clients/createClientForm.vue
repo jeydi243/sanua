@@ -1,26 +1,34 @@
 <script setup lang="ts">
+import { h } from 'vue'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
 import { useClientStore } from '@/stores/client'
 import { Button } from '@/components/ui/button'
-import { PlusIcon } from 'lucide-vue-next'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { toast } from 'vue-sonner'
+import { PlusIcon } from 'lucide-vue-next'
 
 const clientStore = useClientStore()
 const isOpen = ref(false)
 const isLoading = ref(false)
 
-const newClient = ref({
-    nom: '',
-    prenom: '',
-    date_naissance: '',
-    contact: '',
+const formSchema = toTypedSchema(z.object({
+    prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères.'),
+    nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
+    date_naissance: z.string().refine(val => !isNaN(Date.parse(val)), { message: 'Date de naissance invalide.' }),
+    telephone: z.string().min(9, 'Le numéro de téléphone est trop court.'),
+}))
+
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: formSchema,
 })
 
-async function handleCreateClient() {
+const onSubmit = handleSubmit(async (values) => {
     isLoading.value = true
-    const { error } = await clientStore.createClient(newClient.value)
+    const { error } = await clientStore.createClient(values)
     isLoading.value = false
 
     if (error) {
@@ -30,17 +38,16 @@ async function handleCreateClient() {
     } else {
         toast.success('Client créé avec succès')
         isOpen.value = false // Ferme la modale
-        // Réinitialise le formulaire
-        newClient.value = { nom: '', prenom: '', date_naissance: '', contact: '' }
+        resetForm()
     }
-}
+})
 </script>
 
 <template>
     <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
             <Button variant="default">
-                <PlusIcon class="w-4 h-4" />
+                <PlusIcon class="w-4 h-4 mr-2" />
                 Ajouter un Client
             </Button>
         </DialogTrigger>
@@ -49,30 +56,50 @@ async function handleCreateClient() {
                 <DialogTitle>Nouveau Client</DialogTitle>
                 <DialogDescription> Remplissez les informations ci-dessous pour créer un nouveau client. </DialogDescription>
             </DialogHeader>
-            <div class="grid gap-4 py-4">
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="prenom" class="text-right"> Prénom </Label>
-                    <Input id="prenom" v-model="newClient.prenom" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="nom" class="text-right"> Nom </Label>
-                    <Input id="nom" v-model="newClient.nom" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="date_naissance" class="text-right"> Date de naissance </Label>
-                    <Input id="date_naissance" v-model="newClient.date_naissance" type="date" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="contact" class="text-right"> Contact </Label>
-                    <Input id="contact" v-model="newClient.contact" class="col-span-3" />
-                </div>
-            </div>
-            <DialogFooter>
-                <Button :disabled="isLoading" type="submit" @click="handleCreateClient">
-                    <Icon v-if="isLoading" name="line-md:loading-twotone-loop" class="mr-2 h-4 w-4 animate-spin" />
-                    Enregistrer
-                </Button>
-            </DialogFooter>
+            <form class="space-y-4" @submit="onSubmit">
+                <FormField v-slot="{ componentField }" name="prenom">
+                    <FormItem>
+                        <FormLabel>Prénom</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="John" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="nom">
+                    <FormItem>
+                        <FormLabel>Nom</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="Doe" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="date_naissance">
+                    <FormItem>
+                        <FormLabel>Date de naissance</FormLabel>
+                        <FormControl>
+                            <Input type="date" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="telephone">
+                    <FormItem>
+                        <FormLabel>Téléphone</FormLabel>
+                        <FormControl>
+                            <Input type="tel" placeholder="+221 77 123 45 67" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <DialogFooter>
+                    <Button :disabled="isLoading" type="submit">
+                        <Icon v-if="isLoading" name="line-md:loading-twotone-loop" class="mr-2 h-4 w-4 animate-spin" />
+                        Enregistrer
+                    </Button>
+                </DialogFooter>
+            </form>
         </DialogContent>
     </Dialog>
 </template>

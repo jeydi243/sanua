@@ -77,6 +77,7 @@ export interface ClientState {
     error: string | null
     clientChannel: RealtimeChannel | null
 }
+
 // Interface pour un prêt. Remplacez les champs par ceux de votre table 'pret'.
 export interface Pret {
     id?: number

@@ -1,46 +1,62 @@
 <script setup lang="ts">
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
 import { useClientStore } from '@/stores/client'
 import { Button } from '@/components/ui/button'
-import { PlusIcon } from 'lucide-vue-next'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { toast } from 'vue-sonner'
+import { PlusIcon } from 'lucide-vue-next'
+
+const props = defineProps<{
+    clientId: string
+}>()
 
 const clientStore = useClientStore()
 const isOpen = ref(false)
 const isLoading = ref(false)
 
-const newCompte = ref({
-    nom: '',
-    prenom: '',
-    date_naissance: '',
-    contact: '',
+const formSchema = toTypedSchema(z.object({
+    type_compte: z.string().min(2, 'Le type de compte est requis.'),
+    solde: z.number().min(0, 'Le solde initial ne peut pas être négatif.'),
+    numero_compte: z.string().min(5, 'Le numéro de compte est trop court.'),
+}))
+
+const { handleSubmit, resetForm } = useForm({
+    validationSchema: formSchema,
+    initialValues: {
+        solde: 0,
+    },
 })
 
-async function handleCreateCompte() {
+const onSubmit = handleSubmit(async (values) => {
     isLoading.value = true
-    const { error } = await clientStore.createCompte(newCompte.value)
+    const compteData = {
+        ...values,
+        client_id: props.clientId,
+    }
+    const { error } = await clientStore.createCompte(compteData)
     isLoading.value = false
 
     if (error) {
-        toast.error('Erreur lors de la création', {
+        toast.error('Erreur lors de la création du compte', {
             description: error.message,
         })
     } else {
         toast.success('Compte créé avec succès !')
         isOpen.value = false // Ferme la modale
-        // Réinitialise le formulaire
-        newCompte.value = { nom: '', prenom: '', date_naissance: '', contact: '' }
+        resetForm()
     }
-}
+})
 </script>
 
 <template>
     <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="default" size="sm" class="w-50 float-left">
-                <PlusIcon class="w-4 h-4" />
+            <Button variant="default" size="sm">
+                <PlusIcon class="w-4 h-4 mr-2" />
                 Ajouter un Compte
             </Button>
         </DialogTrigger>
@@ -49,30 +65,41 @@ async function handleCreateCompte() {
                 <DialogTitle>Nouveau Compte</DialogTitle>
                 <DialogDescription> Remplissez les informations ci-dessous pour créer un nouveau compte. </DialogDescription>
             </DialogHeader>
-            <div class="grid gap-4 py-4">
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="prenom" class="text-right"> Prénom </Label>
-                    <Input id="prenom" v-model="newCompte.prenom" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="nom" class="text-right"> Nom </Label>
-                    <Input id="nom" v-model="newCompte.nom" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="date_naissance" class="text-right"> Date de naissance </Label>
-                    <Input id="date_naissance" v-model="newCompte.date_naissance" type="date" class="col-span-3" />
-                </div>
-                <div class="grid grid-cols-4 items-center gap-4">
-                    <Label for="contact" class="text-right"> Contact </Label>
-                    <Input id="contact" v-model="newCompte.contact" class="col-span-3" />
-                </div>
-            </div>
-            <DialogFooter>
-                <Button :disabled="isLoading" type="submit" @click="handleCreateCompte">
-                    <Icon v-if="isLoading" name="line-md:loading-twotone-loop" class="mr-2 h-4 w-4 animate-spin" />
-                    Enregistrer
-                </Button>
-            </DialogFooter>
+            <form class="space-y-4" @submit="onSubmit">
+                <FormField v-slot="{ componentField }" name="numero_compte">
+                    <FormItem>
+                        <FormLabel>Numéro de Compte</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="N° de compte" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="type_compte">
+                    <FormItem>
+                        <FormLabel>Type de Compte</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="Ex: Épargne, Courant" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="solde">
+                    <FormItem>
+                        <FormLabel>Solde Initial</FormLabel>
+                        <FormControl>
+                            <Input type="number" v-bind="componentField" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>
+                <DialogFooter>
+                    <Button :disabled="isLoading" type="submit">
+                        <Icon v-if="isLoading" name="line-md:loading-twotone-loop" class="mr-2 h-4 w-4 animate-spin" />
+                        Enregistrer
+                    </Button>
+                </DialogFooter>
+            </form>
         </DialogContent>
     </Dialog>
 </template>
