@@ -37,10 +37,9 @@
 
 <script setup lang="ts">
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import type { Client } from '~/types'
 
 defineProps<{
-    client: Client | null
+    clientId: string
 }>()
 
 const formatDate = (dateString?: string) => {

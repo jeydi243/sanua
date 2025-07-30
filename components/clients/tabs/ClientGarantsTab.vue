@@ -49,12 +49,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-vue-next'
 import CreateGarantSheet from '~/components/garants/CreateGarantSheet.vue'
-import type { Garant, Pret } from '~/types'
+// import type { Garant } from '~/types'
 
 const props = defineProps<{
     clientId: string
-    prets: Pret[]
-    data: Garant[]
+    data: []
 }>()
 
 const columns: ColumnDef<Garant>[] = [

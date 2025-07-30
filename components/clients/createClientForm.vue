@@ -14,12 +14,14 @@ const clientStore = useClientStore()
 const isOpen = ref(false)
 const isLoading = ref(false)
 
-const formSchema = toTypedSchema(z.object({
-    prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères.'),
-    nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
-    date_naissance: z.string().refine(val => !isNaN(Date.parse(val)), { message: 'Date de naissance invalide.' }),
-    telephone: z.string().min(9, 'Le numéro de téléphone est trop court.'),
-}))
+const formSchema = toTypedSchema(
+    z.object({
+        prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères.'),
+        nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères.'),
+        date_naissance: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Date de naissance invalide.' }),
+        telephone: z.string().min(9, 'Le numéro de téléphone est trop court.'),
+    }),
+)
 
 const { handleSubmit, resetForm } = useForm({
     validationSchema: formSchema,
@@ -27,9 +29,9 @@ const { handleSubmit, resetForm } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
     isLoading.value = true
-    const { error } = await clientStore.createClient(values)
+    const { error, data } = await clientStore.createClient(values)
     isLoading.value = false
-
+    console.log(data, error)
     if (error) {
         toast.error('Erreur lors de la création', {
             description: error.message,

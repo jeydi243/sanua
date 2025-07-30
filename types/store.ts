@@ -13,6 +13,8 @@ export interface ClientState {
         details: Client
         comptes: Compte[]
         adresses: Adresse[]
+        contacts: Adresse[]
+        prets: Pret[]
     } | null
     clientChannel: RealtimeChannel | null
     // Les listeners pour les comptes/adresses seront gérés dynamiquement

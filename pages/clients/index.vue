@@ -47,7 +47,7 @@
                 </TableHeader>
                 <TableBody>
                     <template v-if="table.getRowModel().rows?.length">
-                        <TableRow v-for="row in table.getRowModel().rows" :key="row.id" :data-state="row.getIsSelected() && 'selected'">
+                        <TableRow v-for="row in table.getRowModel().rows" :key="row.id" :data-state="row.getIsSelected() && 'selected'" @click="handleRowClick(row)">
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
@@ -55,8 +55,10 @@
                     </template>
                     <TableRow v-else>
                         <TableCell :colspan="columns.length" class="h-24 text-center">
-                            <span v-if="isLoading">Chargement des clients...</span>
-                            <span v-else>Aucun client trouvé.</span>
+                            <transition name="fade">
+                                <span v-if="isLoading">Chargement des clients...</span>
+                                <span v-else>Aucun client trouvé.</span>
+                            </transition>
                         </TableCell>
                     </TableRow>
                 </TableBody>
@@ -86,12 +88,19 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
+useHead({
+    title: 'Sanua - Clients',
+})
 const clientStore = useClientStore()
 
 // Récupérer les clients du store de manière réactive
 const clients = computed(() => clientStore.clients)
 const isLoading = ref(false)
-
+const handleRowClick = async (row: any) => {
+    console.log('Try to navigate to ', row.original)
+    //navigate to client/:id
+    await navigateTo(`/clients/${row.original.client_id}`)
+}
 onMounted(() => {
     // Si les clients ne sont pas déjà chargés, les récupérer
     if (clients.value.length === 0) {
