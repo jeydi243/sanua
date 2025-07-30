@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { h } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useClientStore } from '@/stores/client'
 import { Button } from '@/components/ui/button'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { toast } from 'vue-sonner'

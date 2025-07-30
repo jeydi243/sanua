@@ -8,7 +8,7 @@
                         <CardDescription>
                             Enter your email below to login to your account
                         </CardDescription>
-                        <Alert variant="destructive" class="border border-red-500" v-if="login_result">
+                        <Alert v-if="login_result" variant="destructive" class="border border-red-500">
                             <AlertCircle class="w-4 h-4" />
                             <AlertDescription>
                                 {{ login_result }}
@@ -38,8 +38,8 @@
                                 </FormField>
                                 <div class="flex flex-col gap-3">
                                     <Button type="submit" class="w-full">
-                                        <Icon name="line-md:loading-twotone-loop" style="color: white"
-                                            v-if="isLoading" />
+                                        <Icon v-if="isLoading" name="line-md:loading-twotone-loop"
+                                            style="color: white" />
                                         Connexion
                                     </Button>
                                     <Button variant="outline" class="w-full">
@@ -99,7 +99,7 @@ definePageMeta({
 })
 
 const { signIn } = useUserStore();
-let login_result = ref(null);
+const login_result = ref<string | null>(null);
 
 const props = defineProps<{
     class?: HTMLAttributes['class']
@@ -113,7 +113,7 @@ const formSchema = toTypedSchema(z.object({
     username: z.string().min(2).max(50),
     password: z.string().min(2).max(50),
 }))
-var isLoading = ref(false)
+const isLoading = ref(false)
 const form = useForm({
     validationSchema: formSchema,
 })

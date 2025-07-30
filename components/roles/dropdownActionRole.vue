@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MoreHorizontal } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { toast } from 'vue-sonner';
 
 defineProps<{

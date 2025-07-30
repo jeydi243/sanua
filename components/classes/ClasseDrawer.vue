@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import LookupsList from './LookupsList.vue'
 import { PlusIcon } from 'lucide-vue-next'

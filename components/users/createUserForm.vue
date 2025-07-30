@@ -26,7 +26,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { toast } from 'vue-sonner'
 const openForm = ref(false)
-let apiResponse = ref(null)
+const apiResponse = ref(null)
 const formSchema = toTypedSchema(z.object({
     username: z.string().min(2).max(50),
     email: z.string().email('Inserer un email valide').max(50),
@@ -82,7 +82,7 @@ async function onSubmit(values: any) {
                         Créer un utilsateur public ou un agent
                     </DialogDescription>
                 </DialogHeader>
-                <Alert variant="destructive" class="border border-red-500" v-if="apiResponse">
+                <Alert v-if="apiResponse" variant="destructive" class="border border-red-500">
                     <AlertCircle class="w-4 h-4" />
                     <AlertDescription>
                         {{ apiResponse }}

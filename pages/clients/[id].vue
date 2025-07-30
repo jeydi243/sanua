@@ -69,7 +69,7 @@
         </div>
 
         <!-- Onglets -->
-        <Tabs :default-value="tabs?.[0].value" class="w-full">
+        <Tabs default-value="details" class="w-full">
             <TabsList>
                 <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">
                     <Icon :name="tab.icon" class="mr-2 h-4 w-4" />
@@ -79,11 +79,9 @@
 
             <!-- Contenu des onglets -->
             <TabsContent v-for="tab in tabs" :key="`content-${tab.value}`" :value="tab.value">
-                <component :is="tab.component" v-if="client" :client-id="client.id" :client="client" :comptes="comptes" :prets="prets" />
+                <component :is="tab.component" :client-id="client?.id" :client="client" :data="tab.data" />
             </TabsContent>
         </Tabs>
-
-        
     </div>
 </template>
 <script setup lang="ts">
@@ -108,6 +106,8 @@ import ClientAdressesTab from '@/components/clients/tabs/ClientAdressesTab.vue'
 type Client = ReturnType<typeof useClientStore>['clients'][0]
 type Compte = ReturnType<typeof useClientStore>['comptes'][0]
 type Pret = ReturnType<typeof usePretStore>['prets'][0]
+type Adresse = ReturnType<typeof useClientStore>['adresses'][0]
+type Garant = ReturnType<typeof usePretStore>['garants'][0]
 
 const route = useRoute()
 const clientStore = useClientStore()
@@ -115,16 +115,18 @@ const pretStore = usePretStore()
 const client = ref<Client | null>(null)
 const comptes = ref<Compte[]>([])
 const prets = ref<Pret[]>([])
+const adresses = ref<Adresse[]>([])
+const garants = ref<Garant[]>([])
 const isLoading = ref(true)
 const isPretSheetOpen = ref(false)
 
 const tabs = [
-    { value: 'details', label: 'Détails', icon: 'lucide:user', component: ClientDetailsTab },
-    { value: 'comptes', label: 'Comptes', icon: 'lucide:wallet', component: ClientComptesTab },
-    { value: 'prets', label: 'Prêts', icon: 'lucide:landmark', component: ClientPretsTab },
+    { value: 'details', label: 'Détails', icon: 'lucide:user', component: ClientDetailsTab, data: client },
+    { value: 'comptes', label: 'Comptes', icon: 'lucide:wallet', component: ClientComptesTab, data: comptes },
+    { value: 'prets', label: 'Prêts', icon: 'lucide:landmark', component: ClientPretsTab, data: prets },
     { value: 'documents', label: 'Documents', icon: 'lucide:file-text', component: ClientDocumentsTab },
-    { value: 'garants', label: 'Garants', icon: 'lucide:users', component: ClientGarantsTab },
-    { value: 'adresses', label: 'Adresses', icon: 'lucide:home', component: ClientAdressesTab },
+    { value: 'garants', label: 'Garants', icon: 'lucide:users', component: ClientGarantsTab, data: garants },
+    { value: 'adresses', label: 'Adresses', icon: 'lucide:home', component: ClientAdressesTab, data: adresses },
 ]
 
 useHead({
@@ -138,7 +140,7 @@ onMounted(async () => {
     isLoading.value = true
 
     // Utilisation de Promise.all pour charger les données en parallèle
-    const [clientRes, comptesRes, pretsRes] = await Promise.all([clientStore.fetchClientById(clientId), clientStore.fetchComptesForClient(clientId), pretStore.fetchPretsForClient(clientId)])
+    const [clientRes, comptesRes, pretsRes, adressesRes] = await Promise.all([clientStore.fetchClientById(clientId), clientStore.fetchComptesForClient(clientId), pretStore.fetchPretsForClient(clientId), clientStore.fetchAdressesForClient(clientId)])
 
     if (clientRes.data) {
         client.value = clientRes.data
@@ -148,6 +150,13 @@ onMounted(async () => {
     }
     if (pretsRes.data) {
         prets.value = pretsRes.data
+        // Fetch garants for all prets
+        const garantPromises = prets.value.map((pret) => pretStore.fetchGarantsForPret(pret.id))
+        const garantResults = await Promise.all(garantPromises)
+        garants.value = garantResults.flatMap((res) => res.data || [])
+    }
+    if (adressesRes.data) {
+        adresses.value = adressesRes.data
     }
 
     isLoading.value = false

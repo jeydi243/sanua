@@ -113,7 +113,7 @@ const props = defineProps({
         required: true,
     },
 })
-const { getLookupsByClasseId, getAllLookups } = useAdminStore()
+const { getAllLookups } = useAdminStore()
 
 onMounted(() => {
     console.log(props.classeId)

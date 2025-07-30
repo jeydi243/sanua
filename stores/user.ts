@@ -1,87 +1,61 @@
 import { defineStore } from 'pinia'
-import type { UserState } from '~/types'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { UserState } from '~/types/store'
 
 export const useUserStore = defineStore('user', {
     state: (): UserState => ({
         user: null,
-        loading: false,
-        error: null,
     }),
     actions: {
         /**
-         * Initialise l'utilisateur en récupérant la session Supabase.
-         * Cette action peut être appelée au démarrage de l'application ou lors d'un rafraîchissement.
+         * Initialise le store en mettant en place le listener d'état d'authentification.
          */
+        init() {
+            // Pas de garde de double initialisation nécessaire car onAuthStateChange gère cela.
+            this.setupAuthListener()
+        },
+
         async fetchUser() {
-            this.loading = true
-            this.error = null
             try {
                 const supabase = useSupabaseClient()
-
-                const {
-                    data: { user },
-                    error,
-                } = await supabase.auth.getUser()
-
-                if (error) {
-                    throw error
-                }
-
-                this.user = user
+                const { data, error } = await supabase.auth.getUser()
+                if (error) throw error
+                this.user = data.user
+                return { data: { user: this.user }, error: null }
             } catch (err: any) {
-                this.error =
-                    err.message ||
-                    "Erreur lors de la récupération de l'utilisateur."
                 this.user = null
-            } finally {
-                this.loading = false
+                return { data: null, error: err }
             }
         },
 
         async signIn(email: string, password: string) {
-            const supabase = useSupabaseClient()
-            const {
-                data: { user },
-                error,
-            } = await supabase.auth.signInWithPassword({ email, password })
-            if (error) {
-                console.error('Erreur de connexion:', error.message)
-                return { error }
+            try {
+                const supabase = useSupabaseClient()
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+                if (error) throw error
+                this.user = data.user
+                return { data, error: null }
+            } catch (err: any) {
+                return { data: null, error: err }
             }
-            return { user }
         },
 
         async signOut() {
-            const supabase = useSupabaseClient()
-            const { error } = await supabase.auth.signOut()
-            if (error) {
-                console.error('Erreur de déconnexion:', error.message)
+            try {
+                const supabase = useSupabaseClient()
+                const { error } = await supabase.auth.signOut()
+                if (error) throw error
+                this.user = null
+                return { data: { success: true }, error: null }
+            } catch (err: any) {
+                return { data: null, error: err }
             }
         },
 
-        async getUser() {
-            const supabase = useSupabaseClient()
-            const {
-                data: { user },
-            } = await supabase.auth.getUser()
-            return user
-        },
-
         setupAuthListener() {
-            const supabase = useSupabaseClient()
-            supabase.auth.onAuthStateChange(async (event, session) => {
-                if (event === 'SIGNED_IN') {
-                    // console.log('Utilisateur connecté:', session?.user);
-                    this.user = session?.user || null
-                    const { init } = useAdminStore()
-                    await init()
-                } else if (event === 'SIGNED_OUT') {
-                    console.log('Utilisateur déconnecté.')
-                    this.user = null
-                    const router = useRouter()
-                    router.push('/auth')
-                }
-                // Vous pouvez gérer d'autres événements comme 'INITIAL_SESSION', 'TOKEN_REFRESHED'
+            const supabase: SupabaseClient = useSupabaseClient()
+            supabase.auth.onAuthStateChange((event, session) => {
+                this.user = session?.user || null
             })
         },
     },

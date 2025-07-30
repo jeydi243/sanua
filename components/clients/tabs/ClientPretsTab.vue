@@ -5,63 +5,57 @@
                 <CardTitle>Prêts du Client</CardTitle>
                 <CardDescription>Liste des prêts accordés au client.</CardDescription>
             </div>
-            <CreatePretSheet v-if="clientId"  :client-id="clientId" />
+            <CreatePretSheet v-if="clientId" :client-id="clientId" />
         </CardHeader>
         <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Montant</TableHead>
-                        <TableHead>Taux</TableHead>
-                        <TableHead>Date de début</TableHead>
-                        <TableHead class="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <template v-if="prets.length > 0">
-                        <TableRow v-for="pret in prets" :key="pret.id">
-                            <TableCell class="font-medium">{{ formatCurrency(pret.montant) }}</TableCell>
-                            <TableCell>{{ pret.taux_interet_annuel }}%</TableCell>
-                            <TableCell>{{ formatDate(pret.date_debut) }}</TableCell>
-                            <TableCell class="text-right">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger as-child>
-                                        <Button variant="ghost" class="h-8 w-8 p-0">
-                                            <span class="sr-only">Ouvrir le menu</span>
-                                            <MoreHorizontal class="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>Voir l'échéancier</DropdownMenuItem>
-                                        <DropdownMenuItem>Enregistrer un remboursement</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
+            <div class="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+                            <TableHead v-for="header in headerGroup.headers" :key="header.id">
+                                <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
+                            </TableHead>
                         </TableRow>
-                    </template>
-                    <template v-else>
-                        <TableRow>
-                            <TableEmpty :colspan="4">Aucun prêt trouvé pour ce client.</TableEmpty>
-                        </TableRow>
-                    </template>
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        <template v-if="table.getRowModel().rows?.length">
+                            <TableRow v-for="row in table.getRowModel().rows" :key="row.id" :data-state="row.getIsSelected() && 'selected'">
+                                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell :colspan="columns.length" class="h-24 text-center"> Aucun prêt trouvé. </TableCell>
+                            </TableRow>
+                        </template>
+                    </TableBody>
+                </Table>
+            </div>
+            <div class="flex items-center justify-end space-x-2 py-4">
+                <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()"> Précédent </Button>
+                <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()"> Suivant </Button>
+            </div>
         </CardContent>
     </Card>
 </template>
 
 <script setup lang="ts">
+import { h, ref } from 'vue'
+import { FlexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
+import type { ColumnDef, SortingState } from '@tanstack/vue-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableEmpty } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal } from 'lucide-vue-next'
+import { MoreHorizontal, ArrowUpDown } from 'lucide-vue-next'
 import CreatePretSheet from '~/components/prets/CreatePretSheet.vue'
 import type { Pret } from '~/types'
 
-defineProps<{
+const props = defineProps<{
     clientId: string
-    prets: Pret[]
+    data: Pret[]
 }>()
 
 const formatDate = (dateString?: string) => {
@@ -71,9 +65,52 @@ const formatDate = (dateString?: string) => {
 
 const formatCurrency = (amount?: number) => {
     if (amount === undefined) return 'N/A'
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'XOF',
-    }).format(amount)
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(amount)
 }
+
+const columns: ColumnDef<Pret>[] = [
+    {
+        accessorKey: 'montant',
+        header: ({ column }) => h(Button, { variant: 'ghost', onClick: () => column.toggleSorting(column.getIsSorted() === 'asc') }, () => ['Montant', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]),
+        cell: ({ row }) => h('div', { class: 'font-medium' }, formatCurrency(row.getValue('montant'))),
+    },
+    {
+        accessorKey: 'taux_interet_annuel',
+        header: 'Taux',
+        cell: ({ row }) => h('div', {}, `${row.getValue('taux_interet_annuel')}%`),
+    },
+    {
+        accessorKey: 'date_debut',
+        header: 'Date de début',
+        cell: ({ row }) => h('div', {}, formatDate(row.getValue('date_debut'))),
+    },
+    {
+        id: 'actions',
+        cell: () => {
+            return h(
+                'div',
+                { class: 'relative text-right' },
+                h(DropdownMenu, {}, () => [h(DropdownMenuTrigger, { asChild: true }, () => h(Button, { variant: 'ghost', class: 'h-8 w-8 p-0' }, () => [h('span', { class: 'sr-only' }, 'Ouvrir le menu'), h(MoreHorizontal, { class: 'h-4 w-4' })])), h(DropdownMenuContent, { align: 'end' }, () => [h(DropdownMenuItem, {}, () => "Voir l'échéancier"), h(DropdownMenuItem, {}, () => 'Enregistrer un remboursement')])]),
+            )
+        },
+    },
+]
+
+const sorting = ref<SortingState>([])
+
+const table = useVueTable({
+    get data() {
+        return props.data
+    },
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+    state: {
+        get sorting() {
+            return sorting.value
+        },
+    },
+})
 </script>

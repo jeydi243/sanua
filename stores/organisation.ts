@@ -1,48 +1,42 @@
 import { defineStore } from 'pinia'
-import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Organisation, OrganisationState } from '~/types'
+import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js'
+import type { Organisation } from '~/types'
+import type { OrganisationState } from '~/types/store'
+import type { TablesInsert, TablesUpdate } from '~/types/supabase'
 
 export const useOrganisationStore = defineStore('organisation', {
     state: (): OrganisationState => ({
         organisations: [],
-        loading: false,
-        error: null,
+        organisationChannel: null,
     }),
 
     actions: {
         /**
-         * Crée une nouvelle organisation.
-         * @param organisation - L'objet organisation à créer.
+         * Initialise le store en chargeant les données initiales et en mettant en place le listener temps réel.
          */
-        async createOrganisation(organisation: Omit<Organisation, 'id'>) {
-            this.loading = true
-            this.error = null
+        async init() {
+            if (this.organisationChannel) return // Empêche la double initialisation
+
+            await this.fetchOrganisations()
+            this.setupOrganisationChangesListener()
+        },
+
+        async createOrganisation(organisation: TablesInsert<'organisation'>) {
             try {
                 const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('organisation')
-                    .insert([organisation])
+                    .insert(organisation)
                     .select()
                     .single()
                 if (error) throw error
-                if (data) {
-                    this.organisations.push(data)
-                }
-                return { data, error: null, loading: false }
+                return { data, error: null }
             } catch (err: any) {
-                this.error = err.message
-                return { data: null, error: err.message, loading: false }
-            } finally {
-                this.loading = false
+                return { data: null, error: err }
             }
         },
 
-        /**
-         * Récupère toutes les organisations depuis la base de données.
-         */
         async fetchOrganisations() {
-            this.loading = true
-            this.error = null
             try {
                 const supabase = useSupabaseClient()
                 const { data, error } = await supabase
@@ -50,76 +44,78 @@ export const useOrganisationStore = defineStore('organisation', {
                     .select('*')
                 if (error) throw error
                 this.organisations = data || []
-                return { data, error: null, loading: false }
+                return { data, error: null }
             } catch (err: any) {
-                this.error = err.message
-                return { data: null, error: err.message, loading: false }
-            } finally {
-                this.loading = false
+                return { data: null, error: err }
             }
         },
 
-        /**
-         * Met à jour une organisation existante.
-         * @param organisation - L'objet organisation avec les informations mises à jour.
-         */
-        async updateOrganisation(organisation: Organisation) {
-            this.loading = true
-            this.error = null
-            if (!organisation.id) {
-                const err = new Error(
-                    "L'ID de l'organisation est requis pour la mise à jour.",
-                )
-                this.error = err.message
-                return { data: null, error: err.message, loading: false }
-            }
+        async updateOrganisation(organisation: TablesUpdate<'organisation'>) {
             try {
                 const supabase: SupabaseClient = useSupabaseClient()
                 const { data, error } = await supabase
                     .from('organisation')
                     .update(organisation)
-                    .eq('id', organisation.id)
+                    .eq('organisation_id', organisation.organisation_id!)
                     .select()
                     .single()
                 if (error) throw error
-                if (data) {
-                    const index = this.organisations.findIndex(
-                        (o) => o.id === organisation.id,
-                    )
-                    if (index !== -1) this.organisations[index] = data
-                }
-                return { data, error: null, loading: false }
+                return { data, error: null }
             } catch (err: any) {
-                this.error = err.message
-                return { data: null, error: err.message, loading: false }
-            } finally {
-                this.loading = false
+                return { data: null, error: err }
             }
         },
 
-        /**
-         * Supprime une organisation par son ID.
-         * @param id - L'ID de l'organisation à supprimer.
-         */
-        async deleteOrganisation(id: number) {
-            this.loading = true
-            this.error = null
+        async deleteOrganisation(id: string) {
             try {
                 const supabase = useSupabaseClient()
-                const { error } = await supabase
+                const { data, error } = await supabase
                     .from('organisation')
                     .delete()
-                    .eq('id', id)
+                    .eq('organisation_id', id)
                 if (error) throw error
-                this.organisations = this.organisations.filter(
-                    (o) => o.id !== id,
-                )
-                return { data: { success: true }, error: null, loading: false }
+                return { data, error: null }
             } catch (err: any) {
-                this.error = err.message
-                return { data: null, error: err.message, loading: false }
-            } finally {
-                this.loading = false
+                return { data: null, error: err }
+            }
+        },
+
+        setupOrganisationChangesListener() {
+            if (this.organisationChannel) return
+
+            const supabase: SupabaseClient = useSupabaseClient()
+            this.organisationChannel = supabase
+                .channel('public:organisation')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'organisation' },
+                    (payload) => {
+                        const newOrg = payload.new as Organisation
+                        if (!this.organisations.some(o => o.organisation_id === newOrg.organisation_id)) {
+                            this.organisations.push(newOrg)
+                        }
+                    }
+                )
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'organisation' },
+                    (payload) => {
+                        const updatedOrg = payload.new as Organisation
+                        const index = this.organisations.findIndex(o => o.organisation_id === updatedOrg.organisation_id)
+                        if (index !== -1) this.organisations[index] = updatedOrg
+                    }
+                )
+                .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'organisation' },
+                    (payload) => {
+                        const oldOrgId = (payload.old as Partial<Organisation>).organisation_id
+                        if (oldOrgId) {
+                            this.organisations = this.organisations.filter(o => o.organisation_id !== oldOrgId)
+                        }
+                    }
+                )
+                .subscribe()
+        },
+
+        removeOrganisationChangesListener() {
+            if (this.organisationChannel) {
+                this.organisationChannel.unsubscribe()
+                this.organisationChannel = null
             }
         },
     },
