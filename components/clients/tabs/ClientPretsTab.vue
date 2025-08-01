@@ -55,7 +55,7 @@ import type { Pret } from '~/types'
 
 const props = defineProps<{
     clientId: string
-    data: Pret[]
+    data: Pret[]| null
 }>()
 
 const formatDate = (dateString?: string) => {

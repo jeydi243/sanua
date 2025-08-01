@@ -2,10 +2,10 @@
     <Card>
         <CardHeader class="flex flex-row items-center justify-between">
             <div>
-                <CardTitle>Garants</CardTitle>
-                <CardDescription>Liste des garants pour les prêts du client.</CardDescription>
+                <CardTitle>Contacts du Client</CardTitle>
+                <CardDescription>Liste des contacts du client.</CardDescription>
             </div>
-            <CreateGarantSheet v-if="prets.length > 0" :pret-id="prets[0].id" />
+            <CreateContactSheet v-if="clientId" :client-id="clientId" />
         </CardHeader>
         <CardContent>
             <div class="rounded-md border">
@@ -27,7 +27,7 @@
                         </template>
                         <template v-else>
                             <TableRow>
-                                <TableCell :colspan="columns.length" class="h-24 text-center"> Aucun garant trouvé. </TableCell>
+                                <TableCell :colspan="columns.length" class="h-24 text-center"> Aucun contact trouvé. </TableCell>
                             </TableRow>
                         </template>
                     </TableBody>
@@ -42,40 +42,52 @@
 </template>
 
 <script setup lang="ts">
+import { h, ref } from 'vue'
 import { FlexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import type { ColumnDef, SortingState } from '@tanstack/vue-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, ArrowUpDown } from 'lucide-vue-next'
-import CreateGarantSheet from '~/components/garants/CreateGarantSheet.vue'
-// import type { Garant } from '~/types'
+import CreateCompteSheet from '~/components/clients/CreateCompteSheet.vue'
+
+import type { Contact } from '~/types'
 
 const props = defineProps<{
     clientId: string
-    data: []
+    data: Contact[] | null
 }>()
 
-const columns: ColumnDef<Garant>[] = [
+const formatCurrency = (amount?: number) => {
+    if (amount === undefined) return 'N/A'
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(amount)
+}
+
+const columns: ColumnDef<Compte>[] = [
     {
-        accessorKey: 'nom',
-        header: ({ column }) => h(Button, { variant: 'ghost', onClick: () => column.toggleSorting(column.getIsSorted() === 'asc') }, () => ['Nom', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]),
-        cell: ({ row }) => h('div', {}, row.getValue('nom')),
+        accessorKey: 'numero_compte',
+        header: ({ column }) => h(Button, { variant: 'ghost', onClick: () => column.toggleSorting(column.getIsSorted() === 'asc') }, () => ['N° Compte', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })]),
+        cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('numero_compte')),
     },
     {
-        accessorKey: 'relation',
-        header: 'Relation',
-        cell: ({ row }) => h('div', {}, row.getValue('relation')),
+        accessorKey: 'type_compte',
+        header: 'Type',
+        cell: ({ row }) => h('div', {}, row.getValue('type_compte')),
     },
     {
-        accessorKey: 'contact',
-        header: 'Contact',
-        cell: ({ row }) => h('div', {}, row.getValue('contact')),
+        accessorKey: 'solde',
+        header: () => h('div', { class: 'text-right' }, 'Solde'),
+        cell: ({ row }) => h('div', { class: 'text-right font-medium' }, formatCurrency(row.getValue('solde'))),
     },
     {
         id: 'actions',
         cell: () => {
-            return h('div', { class: 'relative text-right' }, h(MoreHorizontal, { class: 'h-4 w-4' }))
+            return h(
+                'div',
+                { class: 'relative text-right' },
+                h(DropdownMenu, {}, () => [h(DropdownMenuTrigger, { asChild: true }, () => h(Button, { variant: 'ghost', class: 'h-8 w-8 p-0' }, () => [h('span', { class: 'sr-only' }, 'Ouvrir le menu'), h(MoreHorizontal, { class: 'h-4 w-4' })])), h(DropdownMenuContent, { align: 'end' }, () => [h(DropdownMenuItem, {}, () => 'Voir les transactions'), h(DropdownMenuItem, {}, () => 'Faire un dépôt'), h(DropdownMenuItem, {}, () => 'Faire un retrait')])]),
+            )
         },
     },
 ]

@@ -1,10 +1,13 @@
 <template>
+    <NuxtLoadingIndicator />
     <NuxtLayout>
-        <NuxtRouteAnnouncer />
-        <!-- <Transition name="fadeIn" mode="out-in"> -->
-        <NuxtPage :page-key="(route) => route.fullPath" />
-        <Toaster />
-        <!-- </Transition> -->
+        <div>
+            <NuxtRouteAnnouncer />
+            <Transition name="fadeIn" mode="out-in">
+                <NuxtPage :page-key="(route) => route.fullPath" />
+            </Transition>
+            <Toaster />
+        </div>
     </NuxtLayout>
 </template>
 <script setup lang="ts">
@@ -20,7 +23,7 @@ onMounted(() => {
     fetchUser()
     setupAuthListener()
     init().catch((err) => {
-        console.error('Erreur lors de l\'initialisation du store client:', err)
+        console.error("Erreur lors de l'initialisation du store client:", err)
     })
 })
 </script>
@@ -28,7 +31,7 @@ onMounted(() => {
 <style>
 .fadeIn-enter-active,
 .fadeIn-leave-active {
-    transition: all s ease;
+    transition: all 0.3s ease;
 }
 
 .fadeIn-enter-from,

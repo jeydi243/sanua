@@ -18,6 +18,7 @@ export type EcheancierPret = Tables<'echeancierpret'>
 export type Lookup = Tables<'lookup'>
 export type Profile = Tables<'profiles'>
 export type Role = Tables<'roles'>
+export type Contact = Tables<'contact'>
 
 // =================================================================
 // Manually defined types

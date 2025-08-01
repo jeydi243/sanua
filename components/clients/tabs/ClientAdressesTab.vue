@@ -54,7 +54,7 @@ import type { Adresse } from '~/types'
 
 const props = defineProps<{
     clientId: string
-    data: Adresse[]
+    data: Adresse[]| null
 }>()
 
 const columns: ColumnDef<Adresse>[] = [

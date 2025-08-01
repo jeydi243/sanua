@@ -16,5 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 
 defineProps<{
     clientId: string
+    data: Document[] | null
 }>()
 </script>

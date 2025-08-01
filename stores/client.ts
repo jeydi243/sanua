@@ -15,6 +15,7 @@ export const useClientStore = defineStore('client', {
         activeAdresses: (state)=> state.activeClient?.adresses,
         activeContacts: (state)=> state.activeClient?.contacts,
         activePrets: (state)=> state.activeClient?.prets,
+        getClients: (state)=> state.clients,
     },
 
     actions: {
@@ -42,6 +43,7 @@ export const useClientStore = defineStore('client', {
         // Actions sur le client actif
         async setActiveClient(clientId: string) {
             try {
+                console.log('Setting active client: ', clientId)
                 const supabase: SupabaseClient = useSupabaseClient()
                 // Récupérer les données en parallèle pour plus d'efficacité
                 const [clientRes, comptesRes, adressesRes, contactsRes, pretsRes] = await Promise.all([
@@ -81,8 +83,10 @@ export const useClientStore = defineStore('client', {
                     contacts: contactsRes.data || [],
                     prets: pretsRes.data || [],
                 }
-                return { data: this.activeClient, error: null }
+                console.log('The active client is ',this.activeClient)
+                // return { data: this.activeClient, error: null }
             } catch (err: any) {
+                console.log('Error setting active client: ', err)
                 this.activeClient = null
                 return { data: null, error: err }
             }
@@ -120,6 +124,7 @@ export const useClientStore = defineStore('client', {
                     'postgres_changes',
                     { event: 'INSERT', schema: 'public', table: 'client' },
                     (payload) => {
+                        console.log('Client inserted: ', payload.new)
                         this.clients.push(payload.new as Client)
                     },
                 )
@@ -127,6 +132,7 @@ export const useClientStore = defineStore('client', {
                     'postgres_changes',
                     { event: 'UPDATE', schema: 'public', table: 'client' },
                     (payload) => {
+                        console.log('Client updated: ', payload.new)
                         const updated = payload.new as Client
                         const index = this.clients.findIndex(
                             (c) => c.client_id === updated.client_id,
@@ -145,6 +151,7 @@ export const useClientStore = defineStore('client', {
                     'postgres_changes',
                     { event: 'DELETE', schema: 'public', table: 'client' },
                     (payload) => {
+                        console.log('Client deleted: ', payload.old)
                         const oldId = (payload.old as Partial<Client>).client_id
                         this.clients = this.clients.filter(
                             (c) => c.client_id !== oldId,

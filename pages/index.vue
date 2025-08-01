@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-    <ClientOnly>
+    <!-- <ClientOnly>
       <BlurReveal :delay="0.9" :duration="2" class="">
         <h2 class="text-3xl font-bold font tracking-tighter xl:text-5xl/none sm:text-5xl">Bonjour 👋 {{ data.full_name }}
         </h2>
@@ -9,7 +9,7 @@
         </span>
 
       </BlurReveal>
-    </ClientOnly>
+    </ClientOnly> -->
 
     <div class="grid auto-rows-min gap-4 md:grid-cols-3">
 

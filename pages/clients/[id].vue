@@ -1,5 +1,11 @@
 <template>
     <div class="flex flex-1 flex-col gap-4 p-4 md:gap-8">
+        <div class="flex flex-row gap-3 justify-between">
+            <Button variant="outline" class="flex left-0 self-left" @click="router.back()">
+                <ArrowLeftIcon class="w-4 h-4 mr-2" />
+                Retour
+            </Button>
+        </div>
         <!-- En-tête de la page -->
         <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-4">
@@ -12,7 +18,7 @@
                 </template>
                 <template v-else-if="client">
                     <Avatar class="h-16 w-16">
-                        <AvatarImage :src="client.profile_picture" :alt="`${client.prenom} ${client.nom}`" />
+                        <AvatarImage :src="client.profile_picture ?? ''" :alt="`${client.prenom} ${client.nom}`" />
                         <AvatarFallback>{{ getAvatarFallback(client) }}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -21,12 +27,8 @@
                     </div>
                 </template>
             </div>
-            <div class="flex gap-2">
+            <div>
                 <Button variant="outline">Modifier</Button>
-                <Button @click="isPretSheetOpen = true">
-                    <PlusIcon class="w-4 h-4 mr-2" />
-                    Nouvelle Opération
-                </Button>
             </div>
         </div>
 
@@ -87,40 +89,37 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useClientStore } from '@/stores/client'
-import { usePretStore } from '@/stores/pret'
 import { Button } from '@/components/ui/button'
 import type { Client } from '~/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
-import { PlusIcon } from 'lucide-vue-next'
+import {  ArrowLeftIcon } from 'lucide-vue-next'
 
-import ClientDetailsTab from '@/components/clients/tabs/ClientDetailsTab.vue'
 import ClientComptesTab from '@/components/clients/tabs/ClientComptesTab.vue'
 import ClientPretsTab from '@/components/clients/tabs/ClientPretsTab.vue'
 import ClientDocumentsTab from '@/components/clients/tabs/ClientDocumentsTab.vue'
-import ClientGarantsTab from '@/components/clients/tabs/ClientGarantsTab.vue'
+import ClientContactsTab from '@/components/clients/tabs/ClientContactsTab.vue'
 import ClientAdressesTab from '@/components/clients/tabs/ClientAdressesTab.vue'
 
 const route = useRoute()
+const router = useRouter()
 const clientStore = useClientStore()
-const pretStore = usePretStore()
 
-const client = ref<Client | null>(null)
+const client = computed(() => clientStore.activeClient?.details)
 const comptes = computed(() => clientStore.activeComptes)
 const prets = computed(() => clientStore.activePrets)
 const adresses = computed(() => clientStore.activeAdresses)
 const contacts = computed(() => clientStore.activeContacts)
 const isLoading = ref(true)
-const isPretSheetOpen = ref(false)
 
 const tabs = [
     // { value: 'details', label: 'Détails', icon: 'lucide:user', component: ClientDetailsTab, data: client },
     { value: 'comptes', label: 'Comptes', icon: 'lucide:wallet', component: ClientComptesTab, data: comptes },
     { value: 'prets', label: 'Prêts', icon: 'lucide:landmark', component: ClientPretsTab, data: prets },
     { value: 'documents', label: 'Documents', icon: 'lucide:file-text', component: ClientDocumentsTab },
-    { value: 'contacts', label: 'Contacts', icon: 'lucide:users', component: ClientGarantsTab, data: contacts },
+    { value: 'contacts', label: 'Contacts', icon: 'lucide:users', component: ClientContactsTab, data: contacts },
     { value: 'adresses', label: 'Adresses', icon: 'lucide:home', component: ClientAdressesTab, data: adresses },
 ]
 
@@ -137,7 +136,7 @@ definePageMeta({
 const clientId: string = route.params.id as string
 
 onMounted(async () => {
-    if (!clientId) return
+    // if (!clientId) return
     isLoading.value = true
 
     clientStore.setActiveClient(clientId)

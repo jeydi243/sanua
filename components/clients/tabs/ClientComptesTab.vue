@@ -55,7 +55,7 @@ import type { Compte } from '~/types'
 
 const props = defineProps<{
     clientId: string
-    data: Compte[]
+    data: Compte[] | null
 }>()
 
 const formatCurrency = (amount?: number) => {

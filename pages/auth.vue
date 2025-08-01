@@ -5,9 +5,7 @@
                 <Card>
                     <CardHeader>
                         <CardTitle>Login to your account</CardTitle>
-                        <CardDescription>
-                            Enter your email below to login to your account
-                        </CardDescription>
+                        <CardDescription> Enter your email below to login to your account </CardDescription>
                         <Alert v-if="login_result" variant="destructive" class="border border-red-500">
                             <AlertCircle class="w-4 h-4" />
                             <AlertDescription>
@@ -38,20 +36,15 @@
                                 </FormField>
                                 <div class="flex flex-col gap-3">
                                     <Button type="submit" class="w-full">
-                                        <Icon v-if="isLoading" name="line-md:loading-twotone-loop"
-                                            style="color: white" />
+                                        <Icon v-if="isLoading" name="line-md:loading-twotone-loop" style="color: white" />
                                         Connexion
                                     </Button>
-                                    <Button variant="outline" class="w-full">
-                                        Connexion avec Google
-                                    </Button>
+                                    <Button variant="outline" class="w-full"> Connexion avec Google </Button>
                                 </div>
                             </div>
                             <div class="mt-4 text-center text-sm">
                                 Pas de compte ?
-                                <a href="#" class="underline underline-offset-4">
-                                    S'enregistrer
-                                </a>
+                                <a href="#" class="underline underline-offset-4"> S'enregistrer </a>
                             </div>
                         </form>
                     </CardContent>
@@ -66,21 +59,8 @@
 import type { HTMLAttributes } from 'vue'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card'
-import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { AlertCircle } from 'lucide-vue-next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
@@ -89,30 +69,31 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
-
 useHead({ title: 'Authentification - Sanua' })
 definePageMeta({
     layout: 'auth',
     middleware: 'auth',
     title: 'Auth',
-    name: 'auth'
+    name: 'auth',
 })
 
-const { signIn } = useUserStore();
-const login_result = ref<string | null>(null);
+const { signIn } = useUserStore()
+const login_result = ref<string | null>(null)
 
 const props = defineProps<{
     class?: HTMLAttributes['class']
 }>()
 async function login(values: any) {
-    const { email, password } = values;
-    await signIn(email, password);
-    console.log(email, password);
+    const { email, password } = values
+    await signIn(email, password)
+    console.log(email, password)
 }
-const formSchema = toTypedSchema(z.object({
-    username: z.string().min(2).max(50),
-    password: z.string().min(2).max(50),
-}))
+const formSchema = toTypedSchema(
+    z.object({
+        username: z.string().min(2).max(50),
+        password: z.string().min(2).max(50),
+    }),
+)
 const isLoading = ref(false)
 const form = useForm({
     validationSchema: formSchema,
@@ -120,21 +101,20 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit(async (values) => {
     isLoading.value = true
-    const { error, user } = await signIn(values.username, values.password);
+    const { error, data } = await signIn(values.username, values.password)
     console.log('Form submitted!', values)
     if (error) {
         isLoading.value = false
-        console.error('Erreur de connexion:', error.message);
-        login_result.value = error.message;
-        console.log(login_result);
+        console.error('Erreur de connexion:', error.message)
+        login_result.value = error.message
+        console.log(login_result)
     }
-    if (user) {
+    if (data) {
         isLoading.value = false
-        console.log('Connexion réussie:', user);
-        navigateTo('/');
+        console.log('Connexion réussie:', data)
+        navigateTo('/')
     }
 })
-
 </script>
 
 <style scoped></style>

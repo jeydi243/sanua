@@ -31,7 +31,10 @@ export const useUserStore = defineStore('user', {
         async signIn(email: string, password: string) {
             try {
                 const supabase = useSupabaseClient()
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                })
                 if (error) throw error
                 this.user = data.user
                 return { data, error: null }
@@ -55,7 +58,8 @@ export const useUserStore = defineStore('user', {
         setupAuthListener() {
             const supabase: SupabaseClient = useSupabaseClient()
             supabase.auth.onAuthStateChange((event, session) => {
-                this.user = session?.user || null
+                console.log('Auth state changed:', { event }, { session })
+                this.user = session?.user || null 
             })
         },
     },

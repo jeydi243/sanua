@@ -87,6 +87,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import type { Client } from '@/types'
 
 useHead({
     title: 'Sanua - Clients',
@@ -94,19 +95,19 @@ useHead({
 const clientStore = useClientStore()
 
 // Récupérer les clients du store de manière réactive
-const clients = computed(() => clientStore.clients)
+const clients = computed(() => clientStore.getClients)
 const isLoading = ref(false)
 const handleRowClick = async (row: any) => {
     console.log('Try to navigate to ', row.original)
     //navigate to client/:id
     await navigateTo(`/clients/${row.original.client_id}`)
 }
-onMounted(() => {
-    // Si les clients ne sont pas déjà chargés, les récupérer
-    if (clients.value.length === 0) {
-        clientStore.fetchClients()
-    }
-})
+// onMounted(() => {
+//     // Si les clients ne sont pas déjà chargés, les récupérer
+//     if (clients.value.length === 0) {
+//         clientStore.fetchClients()
+//     }
+// })
 
 const getAvatarFallback = (client: Client) => {
     if (!client) return ''
@@ -149,7 +150,7 @@ const columns: ColumnDef<Client>[] = [
                     Avatar,
                     { class: 'h-8 w-8' },
                     {
-                        default: () => [h(AvatarImage, { src: client?.avatar_url, alt: client.nom }), h(AvatarFallback, {}, getAvatarFallback(client))],
+                        default: () => [h(AvatarImage, { src: client?.profile_picture, alt: client.nom }), h(AvatarFallback, {}, getAvatarFallback(client))],
                     },
                 ),
                 h('span', `${client.prenom} ${client.nom}`),
