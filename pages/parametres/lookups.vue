@@ -89,7 +89,7 @@
 
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner'
-import CreateForm from '@/comp~/components/classes/CreateForm.vue
+import CreateForm from '@/components/classes/CreateForm.vue'
 import ClasseDrawer from '@/components/classes/ClasseDrawer.vue'
 import type { ColumnDef, ColumnFiltersState, ExpandedState, SortingState, VisibilityState } from '@tanstack/vue-table'
 import { FlexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
