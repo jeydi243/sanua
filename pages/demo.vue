@@ -32,6 +32,9 @@ const comments = [
 <template>
     <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
         <!-- Header -->
+         <div>
+            
+         </div>
         <div class="flex justify-between items-start mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">New Year Marketing Campaign</h1>

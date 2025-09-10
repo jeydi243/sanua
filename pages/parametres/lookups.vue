@@ -52,7 +52,6 @@
                             :key="row.id"
                             v-motion
                             :data-state="row.getIsSelected() && 'selected'"
-                            class="cursor-pointer"
                             :initial="{ opacity: 0, y: 20 }"
                             :enter="{
                                 opacity: 1,
@@ -61,9 +60,8 @@
                                     delay: index * 50,
                                 },
                             }"
-                            @click="handleRowClick(row)"
                         >
-                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id" :class="{ 'cursor-pointer': !['select', 'actions'].includes(cell.column.id) }" @click="handleCellClick(cell, row)">
                                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
                         </TableRow>
@@ -104,6 +102,11 @@ const selectedClasseId = ref<string | null>(null)
 const handleRowClick = (row: any) => {
     selectedClasseId.value = row.original.id
     isDrawerOpen.value = true
+}
+
+const handleCellClick = (cell: any, row: any) => {
+    if (['select', 'actions'].includes(cell.column.id)) return
+    handleRowClick(row)
 }
 
 const supabase = useSupabaseClient()

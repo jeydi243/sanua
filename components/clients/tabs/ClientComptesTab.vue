@@ -52,6 +52,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, ArrowUpDown } from 'lucide-vue-next'
 import CreateCompteSheet from '~/components/clients/CreateCompteSheet.vue'
 import type { Compte } from '~/types'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{
     clientId: string
@@ -107,5 +108,9 @@ const table = useVueTable({
             return sorting.value
         },
     },
+})
+onMounted(() => {
+    console.log(props.data)
+    toast('Comptes chargés')
 })
 </script>

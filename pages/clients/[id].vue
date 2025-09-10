@@ -23,7 +23,12 @@
                     </Avatar>
                     <div>
                         <h1 class="text-2xl font-semibold">{{ client.prenom }} {{ client.nom }}</h1>
-                        <p class="text-sm text-muted-foreground">Client depuis le {{ formatDate(client.created_at) }}</p>
+                        <p class="text-sm text-muted-foreground flex flex-row gap-2">
+                            {{ client.prenom }}<Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" /> 
+                            Né le {{ client.date_naissance }} <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
+                            Télephone: {{ client.telephone }} <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
+                            Client depuis le <b>{{ formatDate(client.created_at) }}</b>
+                        </p>
                     </div>
                 </template>
             </div>
