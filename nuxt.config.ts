@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     app: {
         layoutTransition: { name: 'fadeIn' },
     },
+    ssr:false,
     modules: [
         '@nuxt/eslint',
         '@nuxt/fonts',
